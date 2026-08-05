@@ -17,7 +17,7 @@ export function CardioDuration({
     <form action={setCardioDuration} className="flex items-end gap-2">
       <input type="hidden" name="workoutExerciseId" value={workoutExerciseId} />
 
-      <label className="flex flex-col gap-1 text-xs text-zinc-500">
+      <label className="flex flex-col gap-1 text-xs tracking-wide text-chalk-dim uppercase">
         Minutos
         <input
           type="number"
@@ -27,11 +27,11 @@ export function CardioDuration({
           max={600}
           required
           defaultValue={minutes}
-          className="w-20 rounded-md border border-zinc-300 px-2 py-2 text-base dark:border-zinc-700 dark:bg-zinc-900"
+          className="w-20 border border-iron bg-floor px-2 py-2 font-mono text-base text-chalk"
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-xs text-zinc-500">
+      <label className="flex flex-col gap-1 text-xs tracking-wide text-chalk-dim uppercase">
         Segundos
         <input
           type="number"
@@ -41,13 +41,13 @@ export function CardioDuration({
           max={59}
           required
           defaultValue={seconds ?? 0}
-          className="w-20 rounded-md border border-zinc-300 px-2 py-2 text-base dark:border-zinc-700 dark:bg-zinc-900"
+          className="w-20 border border-iron bg-floor px-2 py-2 font-mono text-base text-chalk"
         />
       </label>
 
       <button
         type="submit"
-        className="rounded-md bg-zinc-950 px-3 py-2 text-sm font-medium text-white dark:bg-white dark:text-black"
+        className="border border-plate-blue bg-plate-blue-dim px-3 py-2 text-sm font-medium text-chalk transition-colors hover:bg-plate-blue"
       >
         Guardar
       </button>
