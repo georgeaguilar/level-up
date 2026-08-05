@@ -14,11 +14,11 @@ export default async function HistoryPage() {
   const workouts = await getRecentWorkouts(200);
 
   return (
-    <div className="flex flex-col gap-4">
-      <h1 className="text-xl font-semibold">Historial</h1>
+    <div className="enter flex flex-col gap-4">
+      <h1 className="font-display text-2xl tracking-wide">Historial</h1>
 
       {workouts.length === 0 ? (
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-chalk-dim">
           Todavía no registras ningún entrenamiento.
         </p>
       ) : (
@@ -27,7 +27,7 @@ export default async function HistoryPage() {
             <li key={workout.id}>
               <Link
                 href={`/workouts/${workout.id}`}
-                className="block rounded-md border border-zinc-200 px-4 py-3 capitalize hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
+                className="block border border-iron bg-surface px-4 py-3 capitalize text-chalk transition-colors hover:border-plate-red"
               >
                 {formatDate(workout.date)}
               </Link>
