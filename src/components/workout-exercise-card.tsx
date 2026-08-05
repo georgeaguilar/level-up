@@ -9,29 +9,33 @@ export function WorkoutExerciseCard({
   workoutExercise: WorkoutExercise;
 }) {
   const { exercise } = workoutExercise;
+  const isStrength = exercise.kind === "strength";
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+    <div className="flex flex-col gap-3 border border-iron bg-surface p-4">
       <div className="flex items-start justify-between">
         <div>
-          <h3 className="font-medium">{exercise.name}</h3>
-          <span className="text-xs text-zinc-500">
-            {exercise.kind === "strength" ? "Pesas" : "Cardio"}
-            {exercise.muscle_group ? ` · ${exercise.muscle_group}` : ""}
+          <h3 className="font-medium text-chalk">{exercise.name}</h3>
+          <span
+            className={`text-xs font-medium tracking-wide uppercase ${
+              isStrength ? "text-plate-red" : "text-plate-blue"
+            }`}
+          >
+            {isStrength ? "Pesas" : "Cardio"}
+            {exercise.muscle_group ? (
+              <span className="text-chalk-dim normal-case"> · {exercise.muscle_group}</span>
+            ) : null}
           </span>
         </div>
         <form action={removeWorkoutExercise}>
           <input type="hidden" name="workoutExerciseId" value={workoutExercise.id} />
-          <button
-            type="submit"
-            className="text-sm text-zinc-400 hover:text-red-600"
-          >
+          <button type="submit" className="text-sm text-chalk-dim hover:text-plate-red">
             Quitar
           </button>
         </form>
       </div>
 
-      {exercise.kind === "strength" ? (
+      {isStrength ? (
         <SetRows workoutExerciseId={workoutExercise.id} sets={workoutExercise.sets} />
       ) : (
         <CardioDuration
