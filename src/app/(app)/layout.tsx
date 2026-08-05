@@ -12,26 +12,29 @@ export default async function AppLayout({
 
   return (
     <div className="flex flex-1 flex-col">
-      <header className="border-b border-zinc-200 dark:border-zinc-800">
+      <header className="sticky top-0 z-10 border-b border-iron bg-floor/95 backdrop-blur">
         <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-3">
-          <Link href="/" className="text-lg font-semibold">
-            Level Up
+          <Link
+            href="/"
+            className="font-display text-2xl tracking-wide text-chalk"
+          >
+            LEVEL <span className="text-plate-red">UP</span>
           </Link>
-          <nav className="flex items-center gap-4 text-sm">
-            <Link href="/" className="text-zinc-600 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white">
+          <nav className="flex items-center gap-4 text-xs font-medium tracking-wide text-chalk-dim uppercase">
+            <Link href="/" className="transition-colors hover:text-chalk">
               Hoy
             </Link>
-            <Link href="/history" className="text-zinc-600 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white">
+            <Link href="/history" className="transition-colors hover:text-chalk">
               Historial
             </Link>
-            <Link href="/progress" className="text-zinc-600 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white">
+            <Link href="/progress" className="transition-colors hover:text-chalk">
               Progreso
             </Link>
-            <span className="hidden text-zinc-400 sm:inline">
+            <span className="hidden normal-case text-iron-bright sm:inline">
               {profile?.display_name}
             </span>
             <form action={signOut}>
-              <button type="submit" className="text-zinc-600 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white">
+              <button type="submit" className="transition-colors hover:text-plate-red">
                 Salir
               </button>
             </form>
