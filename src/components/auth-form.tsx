@@ -18,7 +18,7 @@ export function AuthForm({ action, mode }: AuthFormProps) {
     <form action={formAction} className="flex flex-col gap-4">
       {mode === "signup" && (
         <div className="flex flex-col gap-1">
-          <label htmlFor="displayName" className="text-sm font-medium">
+          <label htmlFor="displayName" className="text-xs tracking-wide text-chalk-dim uppercase">
             Nombre
           </label>
           <input
@@ -27,13 +27,13 @@ export function AuthForm({ action, mode }: AuthFormProps) {
             type="text"
             required
             autoComplete="name"
-            className="rounded-md border border-zinc-300 px-3 py-2 text-base dark:border-zinc-700 dark:bg-zinc-900"
+            className="border border-iron bg-floor px-3 py-2 text-base text-chalk"
           />
         </div>
       )}
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="email" className="text-sm font-medium">
+        <label htmlFor="email" className="text-xs tracking-wide text-chalk-dim uppercase">
           Correo
         </label>
         <input
@@ -43,12 +43,12 @@ export function AuthForm({ action, mode }: AuthFormProps) {
           required
           autoComplete="email"
           inputMode="email"
-          className="rounded-md border border-zinc-300 px-3 py-2 text-base dark:border-zinc-700 dark:bg-zinc-900"
+          className="border border-iron bg-floor px-3 py-2 text-base text-chalk"
         />
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="password" className="text-sm font-medium">
+        <label htmlFor="password" className="text-xs tracking-wide text-chalk-dim uppercase">
           Contraseña
         </label>
         <input
@@ -58,12 +58,12 @@ export function AuthForm({ action, mode }: AuthFormProps) {
           required
           minLength={6}
           autoComplete={mode === "signup" ? "new-password" : "current-password"}
-          className="rounded-md border border-zinc-300 px-3 py-2 text-base dark:border-zinc-700 dark:bg-zinc-900"
+          className="border border-iron bg-floor px-3 py-2 text-base text-chalk"
         />
       </div>
 
       {state?.error && (
-        <p aria-live="polite" className="text-sm text-red-600 dark:text-red-400">
+        <p aria-live="polite" className="text-sm text-plate-red">
           {state.error}
         </p>
       )}
@@ -71,7 +71,7 @@ export function AuthForm({ action, mode }: AuthFormProps) {
       <button
         type="submit"
         disabled={pending}
-        className="mt-2 rounded-md bg-zinc-950 px-4 py-2.5 text-base font-medium text-white disabled:opacity-60 dark:bg-white dark:text-black"
+        className="mt-2 border border-plate-red bg-plate-red px-4 py-2.5 text-base font-medium text-chalk transition-colors disabled:opacity-60 active:bg-plate-red-dim"
       >
         {pending ? "Un momento…" : mode === "signup" ? "Crear cuenta" : "Entrar"}
       </button>
