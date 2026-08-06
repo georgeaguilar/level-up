@@ -1,5 +1,6 @@
 -- Level Up: schema inicial
--- Pega esto en el SQL Editor de Supabase (o usa la CLI de supabase).
+-- Aplicada manualmente vía SQL Editor de Supabase antes de adoptar la CLI.
+-- Marcada como "applied" con `supabase migration repair` — no se re-ejecuta.
 
 create extension if not exists "pgcrypto";
 

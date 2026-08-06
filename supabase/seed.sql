@@ -1,5 +1,5 @@
 -- Catálogo global de ejercicios (user_id = null, visible para todos).
--- Corre esto DESPUÉS de 0001_init.sql.
+-- Corre esto DESPUÉS de 20260804125350_init.sql.
 
 insert into public.exercises (name, kind, muscle_group) values
   ('Press de banca', 'strength', 'pecho'),

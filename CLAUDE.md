@@ -6,7 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
+This repo pins Node via `.nvmrc` (22.13.0, arm64) — on Apple Silicon, run `nvm use` before anything else. Without it, npm falls back to whatever `node` is on PATH; if that's an x64 build running under Rosetta, native deps (`supabase` CLI, `@next/swc`, `lightningcss`) resolve to x64 binaries that crash with `SIGILL` (Rosetta doesn't emulate the AVX instructions they use).
+
 ```bash
+nvm use         # match the pinned Node — required on Apple Silicon, see above
 npm run dev     # start dev server (Next.js 16, Turbopack)
 npm run build   # production build
 npm run start   # run production build
@@ -15,7 +18,7 @@ npm run lint    # eslint (flat config: eslint-config-next core-web-vitals + type
 
 There is no test suite configured in this repo.
 
-Database schema lives in `supabase/migrations/0001_init.sql` (apply via the Supabase SQL editor or CLI); `supabase/seed.sql` has seed data. Env vars (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`) are in `.env.local`, documented in `.env.example`.
+**Database migrations are applied automatically.** Schema changes are SQL files in `supabase/migrations/` (timestamped, e.g. `20260804125350_init.sql`), driven by the Supabase CLI (`supabase` devDependency). Create a new one with `npm run db:new <name>`, write the incremental SQL (never edit a migration that's already been pushed), commit, and push to `main` — `.github/workflows/db-migrate.yml` runs `supabase db push --linked` against the hosted project (ref `qsdnmdyprzrvgcwpvoba`) automatically. `npm run db:status` shows local vs. remote migration state; `npm run db:push` is the manual escape hatch. `supabase/seed.sql` has seed data (not run by the workflow — apply by hand via SQL editor or `supabase db execute`). Env vars (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`) are in `.env.local`, documented in `.env.example`.
 
 ## Architecture
 
@@ -31,7 +34,7 @@ Level Up is a personal workout tracker: Next.js App Router + Supabase (Postgres 
 
 **Supabase clients** (`src/lib/supabase/`): `client.ts` for Client Components, `server.ts` for Server Components/Actions (cookie-based, can't write cookies from a pure Server Component — that's expected, the proxy handles session refresh). Don't add a third client variant; extend one of these two.
 
-**Data model** (`src/lib/types.ts` mirrors `supabase/migrations/0001_init.sql`): `Workout` (one per user per calendar date, enforced by a unique constraint) has many `WorkoutExercise` (an exercise instance within that workout, ordered by `position`), which has many `ExerciseSet` for strength exercises or a single `duration_seconds` for cardio. `Exercise` rows are either global catalog entries (`user_id is null`) or user-created custom ones. Progress math (1RM via Epley formula, volume, unit conversion lb→kg) lives in `getExerciseProgress`/`getCardioProgress` in `dal.ts`.
+**Data model** (`src/lib/types.ts` mirrors `supabase/migrations/*.sql`): `Workout` (one per user per calendar date, enforced by a unique constraint) has many `WorkoutExercise` (an exercise instance within that workout, ordered by `position`), which has many `ExerciseSet` for strength exercises or a single `duration_seconds` for cardio. `Exercise` rows are either global catalog entries (`user_id is null`) or user-created custom ones. Progress math (1RM via Epley formula, volume, unit conversion lb→kg) lives in `getExerciseProgress`/`getCardioProgress` in `dal.ts`.
 
 **Rendering approach**: components default to Server Components rendering plain `<form action={serverAction}>` — no client-side form state or fetch calls for mutations (see `exercise-picker.tsx`, `set-rows.tsx`, `cardio-duration.tsx`). `"use client"` is reserved for actual interactivity: `auth-form.tsx` (`useActionState` for pending/error UI) and `progress-chart.tsx` (Recharts).
 
