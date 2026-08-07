@@ -24,7 +24,10 @@ jobs:
 
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          # Pineado: "latest" bajó una versión con un bug de validación de
+          # schema en `link` (SchemaError en el campo inserted_at de las API
+          # keys). 2.111.0 es la que se probó en local sin problemas.
+          version: 2.111.0
 
       - name: Link al proyecto
         run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
