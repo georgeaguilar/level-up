@@ -63,7 +63,7 @@ export function ProgressChart({ data }: { data: ExerciseProgressPoint[] }) {
   const latest = data[data.length - 1][metric];
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex min-w-0 flex-col gap-4">
       <PlateBadge
         value={latest.toLocaleString("es")}
         unit="kg"
@@ -71,7 +71,7 @@ export function ProgressChart({ data }: { data: ExerciseProgressPoint[] }) {
         tone={active.tone}
       />
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         {(Object.keys(METRICS) as Metric[]).map((key) => (
           <button
             key={key}
@@ -88,11 +88,18 @@ export function ProgressChart({ data }: { data: ExerciseProgressPoint[] }) {
         ))}
       </div>
 
-      <div className="h-64 w-full">
+      <div className="h-56 w-full min-w-0 sm:h-64">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={IRON} />
-            <XAxis dataKey="date" tickFormatter={formatDate} fontSize={12} stroke={CHALK_DIM} />
+            <XAxis
+              dataKey="date"
+              tickFormatter={formatDate}
+              fontSize={12}
+              stroke={CHALK_DIM}
+              minTickGap={16}
+              interval="preserveStartEnd"
+            />
             <YAxis fontSize={12} width={40} stroke={CHALK_DIM} />
             <Tooltip labelFormatter={formatTooltipLabel} contentStyle={tooltipStyle} />
             <Line
@@ -125,14 +132,21 @@ export function CardioChart({ data }: { data: CardioProgressPoint[] }) {
   const latest = chartData[chartData.length - 1].minutes;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex min-w-0 flex-col gap-4">
       <PlateBadge value={latest.toLocaleString("es")} unit="min" label="ÚLTIMO TIEMPO" tone="blue" />
 
-      <div className="h-64 w-full">
+      <div className="h-56 w-full min-w-0 sm:h-64">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={IRON} />
-            <XAxis dataKey="date" tickFormatter={formatDate} fontSize={12} stroke={CHALK_DIM} />
+            <XAxis
+              dataKey="date"
+              tickFormatter={formatDate}
+              fontSize={12}
+              stroke={CHALK_DIM}
+              minTickGap={16}
+              interval="preserveStartEnd"
+            />
             <YAxis fontSize={12} width={40} unit="m" stroke={CHALK_DIM} />
             <Tooltip labelFormatter={formatTooltipLabel} contentStyle={tooltipStyle} />
             <Line
