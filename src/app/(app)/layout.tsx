@@ -13,14 +13,14 @@ export default async function AppLayout({
   return (
     <div className="flex flex-1 flex-col">
       <header className="sticky top-0 z-10 border-b border-iron bg-floor/95 backdrop-blur">
-        <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-3">
+        <div className="mx-auto flex w-full max-w-2xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3">
           <Link
             href="/"
             className="font-display text-2xl tracking-wide text-chalk"
           >
             LEVEL <span className="text-plate-red">UP</span>
           </Link>
-          <nav className="flex items-center gap-4 text-xs font-medium tracking-wide text-chalk-dim uppercase">
+          <nav className="flex flex-wrap items-center justify-end gap-3 text-xs font-medium tracking-wide text-chalk-dim uppercase sm:gap-4">
             <Link href="/" className="transition-colors hover:text-chalk">
               Hoy
             </Link>
@@ -41,7 +41,9 @@ export default async function AppLayout({
           </nav>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-6">{children}</main>
+      <main className="mx-auto w-full max-w-2xl flex-1 px-4 pt-6 pb-[calc(3rem+env(safe-area-inset-bottom))]">
+        {children}
+      </main>
     </div>
   );
 }
