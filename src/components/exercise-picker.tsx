@@ -27,7 +27,7 @@ export function ExercisePicker({ workoutId, exercises }: ExercisePickerProps) {
           name="exerciseId"
           required
           defaultValue=""
-          className="flex-1 border border-iron bg-floor px-3 py-2 text-base text-chalk"
+          className="min-w-0 flex-1 border border-iron bg-floor px-3 py-2 text-base text-chalk"
         >
           <option value="" disabled>
             Elige un ejercicio…
@@ -53,7 +53,7 @@ export function ExercisePicker({ workoutId, exercises }: ExercisePickerProps) {
         </select>
         <button
           type="submit"
-          className="border border-plate-red bg-plate-red px-4 py-2 text-sm font-medium text-chalk transition-colors active:bg-plate-red-dim"
+          className="shrink-0 border border-plate-red bg-plate-red px-4 py-2 text-sm font-medium text-chalk transition-colors active:bg-plate-red-dim"
         >
           Agregar
         </button>
@@ -77,14 +77,14 @@ export function ExercisePicker({ workoutId, exercises }: ExercisePickerProps) {
             <select
               name="kind"
               defaultValue="strength"
-              className="flex-1 border border-iron bg-floor px-3 py-2 text-base text-chalk"
+              className="min-w-0 flex-1 border border-iron bg-floor px-3 py-2 text-base text-chalk"
             >
               <option value="strength">Pesas</option>
               <option value="cardio">Cardio</option>
             </select>
             <button
               type="submit"
-              className="border border-iron-bright px-4 py-2 text-sm font-medium text-chalk hover:border-chalk-dim"
+              className="shrink-0 border border-iron-bright px-4 py-2 text-sm font-medium text-chalk hover:border-chalk-dim"
             >
               Crear y agregar
             </button>

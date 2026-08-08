@@ -30,7 +30,7 @@ export default async function ProgressPage(props: PageProps<"/progress">) {
             <select
               name="exercise"
               defaultValue={selected?.id}
-              className="flex-1 border border-iron bg-surface px-3 py-2 text-base text-chalk"
+              className="min-w-0 flex-1 border border-iron bg-surface px-3 py-2 text-base text-chalk"
             >
               {strength.length > 0 && (
                 <optgroup label="Pesas">
@@ -53,7 +53,7 @@ export default async function ProgressPage(props: PageProps<"/progress">) {
             </select>
             <button
               type="submit"
-              className="border border-plate-red bg-plate-red px-4 py-2 text-sm font-medium text-chalk transition-colors active:bg-plate-red-dim"
+              className="shrink-0 border border-plate-red bg-plate-red px-4 py-2 text-sm font-medium text-chalk transition-colors active:bg-plate-red-dim"
             >
               Ver
             </button>
