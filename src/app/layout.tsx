@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bebas_Neue, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -25,13 +25,18 @@ export const metadata: Metadata = {
   description: "Registra tu entrenamiento y sigue tu progresión en el gym.",
 };
 
+export const viewport: Viewport = {
+  themeColor: "#17140f",
+  viewportFit: "cover",
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es"
-      className={`${bebasNeue.variable} ${plexSans.variable} ${plexMono.variable} h-full antialiased`}
+      className={`${bebasNeue.variable} ${plexSans.variable} ${plexMono.variable} antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-floor text-chalk">{children}</body>
+      <body className="min-h-dvh flex flex-col bg-floor text-chalk">{children}</body>
     </html>
   );
 }
