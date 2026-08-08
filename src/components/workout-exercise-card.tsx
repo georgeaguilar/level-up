@@ -13,9 +13,9 @@ export function WorkoutExerciseCard({
 
   return (
     <div className="flex flex-col gap-3 border border-iron bg-surface p-4">
-      <div className="flex items-start justify-between">
-        <div>
-          <h3 className="font-medium text-chalk">{exercise.name}</h3>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="break-words font-medium text-chalk">{exercise.name}</h3>
           <span
             className={`text-xs font-medium tracking-wide uppercase ${
               isStrength ? "text-plate-red" : "text-plate-blue"
@@ -27,9 +27,9 @@ export function WorkoutExerciseCard({
             ) : null}
           </span>
         </div>
-        <form action={removeWorkoutExercise}>
+        <form action={removeWorkoutExercise} className="shrink-0">
           <input type="hidden" name="workoutExerciseId" value={workoutExercise.id} />
-          <button type="submit" className="text-sm text-chalk-dim hover:text-plate-red">
+          <button type="submit" className="-m-2 p-2 text-sm text-chalk-dim hover:text-plate-red">
             Quitar
           </button>
         </form>

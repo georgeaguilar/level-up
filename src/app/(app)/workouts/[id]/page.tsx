@@ -43,13 +43,13 @@ export default async function WorkoutPage(props: PageProps<"/workouts/[id]">) {
 
   return (
     <div className="enter flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl tracking-wide capitalize">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <h1 className="min-w-0 flex-1 font-display text-2xl tracking-wide capitalize break-words">
           {formatDate(workout.date)}
         </h1>
-        <form action={deleteWorkout}>
+        <form action={deleteWorkout} className="shrink-0">
           <input type="hidden" name="workoutId" value={workout.id} />
-          <button type="submit" className="text-sm text-chalk-dim hover:text-plate-red">
+          <button type="submit" className="-m-2 p-2 text-sm text-chalk-dim hover:text-plate-red">
             Borrar entrenamiento
           </button>
         </form>
