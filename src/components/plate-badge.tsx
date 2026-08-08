@@ -14,6 +14,7 @@ const TONE = {
 /** Insignia "plato estampado": el número que más importa en la pantalla, tratado como el peso grabado en un disco. */
 export function PlateBadge({ value, unit, label, tone = "red" }: PlateBadgeProps) {
   const t = TONE[tone];
+  const size = value.length > 6 ? "text-xl" : value.length > 4 ? "text-2xl" : "text-3xl";
 
   return (
     <div className="flex items-center gap-4">
@@ -21,10 +22,14 @@ export function PlateBadge({ value, unit, label, tone = "red" }: PlateBadgeProps
         className={`relative flex h-24 w-24 shrink-0 items-center justify-center rounded-full border-4 ${t.ring} ${t.fill}`}
       >
         <div className={`absolute inset-2 rounded-full border ${t.ring} opacity-40`} />
-        <span className={`font-display text-3xl leading-none ${t.text}`}>{value}</span>
+        <span className={`font-display ${size} px-1 text-center leading-none tabular-nums ${t.text}`}>
+          {value}
+        </span>
       </div>
-      <div className="flex flex-col gap-0.5">
-        <span className="font-display text-xs tracking-[0.2em] text-chalk-dim">{label}</span>
+      <div className="flex min-w-0 flex-col gap-0.5">
+        <span className="font-display text-xs tracking-[0.2em] text-chalk-dim break-words">
+          {label}
+        </span>
         {unit && <span className="font-mono text-sm text-chalk-dim">{unit}</span>}
       </div>
     </div>
