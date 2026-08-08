@@ -29,7 +29,7 @@ export function SetRows({ workoutExerciseId, sets }: SetRowsProps) {
                 <button
                   type="submit"
                   aria-label="Borrar serie"
-                  className="text-chalk-dim hover:text-plate-red"
+                  className="-m-2 p-2 text-chalk-dim hover:text-plate-red"
                 >
                   ✕
                 </button>
@@ -39,10 +39,10 @@ export function SetRows({ workoutExerciseId, sets }: SetRowsProps) {
         </div>
       )}
 
-      <form action={addSet} className="flex items-end gap-2">
+      <form action={addSet} className="flex flex-wrap items-end gap-2">
         <input type="hidden" name="workoutExerciseId" value={workoutExerciseId} />
 
-        <label className="flex flex-col gap-1 text-xs tracking-wide text-chalk-dim uppercase">
+        <label className="flex min-w-0 flex-1 basis-16 flex-col gap-1 text-xs tracking-wide text-chalk-dim uppercase">
           Reps
           <input
             type="number"
@@ -52,11 +52,11 @@ export function SetRows({ workoutExerciseId, sets }: SetRowsProps) {
             max={1000}
             required
             defaultValue={lastSet?.reps}
-            className="w-16 border border-iron bg-floor px-2 py-2 font-mono text-base text-chalk"
+            className="w-full border border-iron bg-floor px-2 py-2 font-mono text-base text-chalk"
           />
         </label>
 
-        <label className="flex flex-col gap-1 text-xs tracking-wide text-chalk-dim uppercase">
+        <label className="flex min-w-0 flex-1 basis-20 flex-col gap-1 text-xs tracking-wide text-chalk-dim uppercase">
           Peso
           <input
             type="number"
@@ -67,11 +67,11 @@ export function SetRows({ workoutExerciseId, sets }: SetRowsProps) {
             max={2000}
             required
             defaultValue={lastSet?.weight}
-            className="w-20 border border-iron bg-floor px-2 py-2 font-mono text-base text-chalk"
+            className="w-full border border-iron bg-floor px-2 py-2 font-mono text-base text-chalk"
           />
         </label>
 
-        <label className="flex flex-col gap-1 text-xs tracking-wide text-chalk-dim uppercase">
+        <label className="flex shrink-0 flex-col gap-1 text-xs tracking-wide text-chalk-dim uppercase">
           Unidad
           <select
             name="unit"
@@ -85,7 +85,7 @@ export function SetRows({ workoutExerciseId, sets }: SetRowsProps) {
 
         <button
           type="submit"
-          className="border border-plate-red bg-plate-red px-3 py-2 text-sm font-medium text-chalk transition-colors active:bg-plate-red-dim"
+          className="basis-full border border-plate-red bg-plate-red px-3 py-2 text-sm font-medium text-chalk transition-colors active:bg-plate-red-dim sm:basis-auto"
         >
           + Serie
         </button>
