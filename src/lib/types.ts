@@ -1,12 +1,57 @@
 export type ExerciseKind = "strength" | "cardio";
 export type WeightUnit = "kg" | "lb";
 
+export type MuscleGroup =
+  | "chest"
+  | "back"
+  | "lats"
+  | "traps"
+  | "shoulders"
+  | "biceps"
+  | "triceps"
+  | "forearms"
+  | "quads"
+  | "hamstrings"
+  | "glutes"
+  | "calves"
+  | "core"
+  | "full_body"
+  | "cardio";
+
+export type Equipment =
+  | "barbell"
+  | "ez_bar"
+  | "dumbbell"
+  | "kettlebell"
+  | "machine"
+  | "cable"
+  | "smith"
+  | "bodyweight"
+  | "band"
+  | "plate"
+  | "sled"
+  | "bench"
+  | "cardio_machine"
+  | "other";
+
+export type Grip = "overhand" | "underhand" | "neutral" | "wide" | "close" | "mixed" | "rotating";
+
+export type Mechanic = "compound" | "isolation";
+
 export type Exercise = {
   id: string;
   user_id: string | null;
   name: string;
+  /** Nombre en inglés del catálogo global; `null` en ejercicios propios del usuario. */
+  name_en: string | null;
   kind: ExerciseKind;
-  muscle_group: string | null;
+  /** Slug estable del catálogo global (`user_id is null`); `null` en ejercicios propios. */
+  slug: string | null;
+  muscle_group: MuscleGroup | null;
+  equipment: Equipment | null;
+  grip: Grip | null;
+  mechanic: Mechanic | null;
+  is_unilateral: boolean;
 };
 
 export type ExerciseSet = {

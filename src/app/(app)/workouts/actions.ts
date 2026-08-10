@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { verifySession } from "@/lib/dal";
 import { createClient } from "@/lib/supabase/server";
+import { getDictionary } from "@/i18n/server";
+import { EQUIPMENT_OPTIONS, MUSCLE_GROUPS } from "@/lib/exercise-display";
 
 function todayIsoDate() {
   // Fecha local del servidor en formato YYYY-MM-DD.
@@ -57,7 +59,10 @@ async function assertOwnsWorkout(workoutId: string, userId: string) {
     .maybeSingle();
 
   if (error) throw error;
-  if (!data) throw new Error("No autorizado.");
+  if (!data) {
+    const { t } = await getDictionary();
+    throw new Error(t("errors.unauthorized"));
+  }
 }
 
 const addExerciseSchema = z.object({
@@ -90,18 +95,25 @@ export async function addExerciseToWorkout(formData: FormData) {
   revalidatePath(`/workouts/${workoutId}`);
 }
 
+// El <select> de grupo muscular/equipo es opcional y envía "" sin elegir nada.
+const emptyToUndefined = (value: unknown) => (value === "" ? undefined : value);
+
 const createCustomExerciseSchema = z.object({
   workoutId: z.string().uuid(),
   name: z.string().trim().min(1).max(80),
   kind: z.enum(["strength", "cardio"]),
+  muscleGroup: z.preprocess(emptyToUndefined, z.enum(MUSCLE_GROUPS).optional()),
+  equipment: z.preprocess(emptyToUndefined, z.enum(EQUIPMENT_OPTIONS).optional()),
 });
 
 export async function createCustomExercise(formData: FormData) {
   const { userId } = await verifySession();
-  const { workoutId, name, kind } = createCustomExerciseSchema.parse({
+  const { workoutId, name, kind, muscleGroup, equipment } = createCustomExerciseSchema.parse({
     workoutId: formData.get("workoutId"),
     name: formData.get("name"),
     kind: formData.get("kind"),
+    muscleGroup: formData.get("muscleGroup"),
+    equipment: formData.get("equipment"),
   });
 
   await assertOwnsWorkout(workoutId, userId);
@@ -109,7 +121,13 @@ export async function createCustomExercise(formData: FormData) {
 
   const { data: exercise, error: exerciseError } = await supabase
     .from("exercises")
-    .insert({ user_id: userId, name, kind })
+    .insert({
+      user_id: userId,
+      name,
+      kind,
+      muscle_group: muscleGroup ?? null,
+      equipment: equipment ?? null,
+    })
     .select("id")
     .single();
 
@@ -140,7 +158,10 @@ async function assertOwnsWorkoutExercise(workoutExerciseId: string, userId: stri
     .maybeSingle();
 
   if (error) throw error;
-  if (!data) throw new Error("No autorizado.");
+  if (!data) {
+    const { t } = await getDictionary();
+    throw new Error(t("errors.unauthorized"));
+  }
   return data.workout_id as string;
 }
 

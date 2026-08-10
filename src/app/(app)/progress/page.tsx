@@ -1,12 +1,18 @@
-import { getCardioProgress, getExerciseProgress, getExercises } from "@/lib/dal";
+import { getCardioProgress, getExerciseProgress, getLoggedExercises } from "@/lib/dal";
 import { CardioChart, ProgressChart } from "@/components/progress-chart";
+import { getDictionary } from "@/i18n/server";
+import { exerciseName, sortExercises } from "@/lib/exercise-display";
 
 export default async function ProgressPage(props: PageProps<"/progress">) {
   const searchParams = await props.searchParams;
   const requestedId =
     typeof searchParams.exercise === "string" ? searchParams.exercise : undefined;
 
-  const exercises = await getExercises();
+  const [loggedExercises, { locale, t }] = await Promise.all([
+    getLoggedExercises(),
+    getDictionary(),
+  ]);
+  const exercises = sortExercises(loggedExercises, locale);
   const selected = exercises.find((e) => e.id === requestedId) ?? exercises[0];
 
   const strength = exercises.filter((e) => e.kind === "strength");
@@ -20,10 +26,10 @@ export default async function ProgressPage(props: PageProps<"/progress">) {
 
   return (
     <div className="enter flex flex-col gap-6">
-      <h1 className="font-display text-2xl tracking-wide">Progreso</h1>
+      <h1 className="font-display text-2xl tracking-wide">{t("progress.title")}</h1>
 
       {exercises.length === 0 ? (
-        <p className="text-sm text-chalk-dim">Todavía no hay ejercicios en el catálogo.</p>
+        <p className="text-sm text-chalk-dim">{t("progress.noLoggedExercises")}</p>
       ) : (
         <>
           <form action="/progress" method="get" className="flex gap-2">
@@ -33,19 +39,19 @@ export default async function ProgressPage(props: PageProps<"/progress">) {
               className="min-w-0 flex-1 border border-iron bg-surface px-3 py-2 text-base text-chalk"
             >
               {strength.length > 0 && (
-                <optgroup label="Pesas">
+                <optgroup label={t("exerciseKind.strength")}>
                   {strength.map((exercise) => (
                     <option key={exercise.id} value={exercise.id}>
-                      {exercise.name}
+                      {exerciseName(exercise, locale)}
                     </option>
                   ))}
                 </optgroup>
               )}
               {cardio.length > 0 && (
-                <optgroup label="Cardio">
+                <optgroup label={t("exerciseKind.cardio")}>
                   {cardio.map((exercise) => (
                     <option key={exercise.id} value={exercise.id}>
-                      {exercise.name}
+                      {exerciseName(exercise, locale)}
                     </option>
                   ))}
                 </optgroup>
@@ -55,14 +61,14 @@ export default async function ProgressPage(props: PageProps<"/progress">) {
               type="submit"
               className="shrink-0 border border-plate-red bg-plate-red px-4 py-2 text-sm font-medium text-chalk transition-colors active:bg-plate-red-dim"
             >
-              Ver
+              {t("progress.viewButton")}
             </button>
           </form>
 
           {selected && (
             <div>
               <h2 className="mb-3 font-display text-lg tracking-wide text-chalk-dim">
-                {selected.name}
+                {exerciseName(selected, locale)}
               </h2>
               {selected.kind === "strength" ? (
                 <ProgressChart data={data as Awaited<ReturnType<typeof getExerciseProgress>>} />

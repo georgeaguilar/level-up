@@ -41,22 +41,50 @@ export const getProfile = cache(async () => {
   return data;
 });
 
-export async function getExercises(search?: string): Promise<Exercise[]> {
+const EXERCISE_COLUMNS =
+  "id, user_id, name, name_en, slug, kind, muscle_group, equipment, grip, mechanic, is_unilateral";
+
+/**
+ * Catálogo completo (global + propio). Sin filtro de servidor: con ~250
+ * ejercicios se trae todo y se filtra en cliente (ver `ExercisePicker`),
+ * que es lo que permite búsqueda y chips instantáneos sin ida y vuelta.
+ */
+export async function getExercises(): Promise<Exercise[]> {
   await verifySession();
   const supabase = await createClient();
 
-  let query = supabase
+  const { data, error } = await supabase
     .from("exercises")
-    .select("id, user_id, name, kind, muscle_group")
+    .select(EXERCISE_COLUMNS)
     .order("name", { ascending: true });
 
-  if (search) {
-    query = query.ilike("name", `%${search}%`);
-  }
-
-  const { data, error } = await query;
   if (error) throw error;
   return data;
+}
+
+/**
+ * Ejercicios distintos que el usuario ha registrado alguna vez en algún
+ * entrenamiento. La usa `/progress`: con el catálogo completo (~250) de
+ * `getExercises()` el selector de esa página sería inservible y casi
+ * ningún ejercicio tendría series/tiempos que graficar.
+ */
+export async function getLoggedExercises(): Promise<Exercise[]> {
+  const { userId } = await verifySession();
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("workout_exercises")
+    .select(`exercise:exercises!inner ( ${EXERCISE_COLUMNS} ), workouts!inner ( user_id )`)
+    .eq("workouts.user_id", userId);
+
+  if (error) throw error;
+
+  // Igual que en `getExerciseProgress`: sin tipos generados de Supabase el
+  // cliente infiere mal la relación many-to-one, hay que forzar el tipo.
+  const rows = data as unknown as Array<{ exercise: Exercise }>;
+  const byId = new Map(rows.map((row) => [row.exercise.id, row.exercise]));
+
+  return Array.from(byId.values()).sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export async function getRecentWorkouts(limit = 10) {
@@ -87,7 +115,7 @@ export async function getWorkout(
       id, user_id, date, notes,
       workout_exercises (
         id, workout_id, exercise_id, position, duration_seconds,
-        exercise:exercises ( id, user_id, name, kind, muscle_group ),
+        exercise:exercises ( ${EXERCISE_COLUMNS} ),
         sets:exercise_sets ( id, workout_exercise_id, set_number, reps, weight, unit )
       )
     `,
