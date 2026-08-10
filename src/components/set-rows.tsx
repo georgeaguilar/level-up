@@ -1,5 +1,6 @@
 import type { ExerciseSet } from "@/lib/types";
 import { addSet, deleteSet } from "@/app/(app)/workouts/actions";
+import { getDictionary } from "@/i18n/server";
 
 type SetRowsProps = {
   workoutExerciseId: string;
@@ -7,8 +8,9 @@ type SetRowsProps = {
 };
 
 /** Lista de series de un ejercicio de pesas + fila para agregar la siguiente. */
-export function SetRows({ workoutExerciseId, sets }: SetRowsProps) {
+export async function SetRows({ workoutExerciseId, sets }: SetRowsProps) {
   const lastSet = sets[sets.length - 1];
+  const { t } = await getDictionary();
 
   return (
     <div className="flex flex-col gap-2">
@@ -28,7 +30,7 @@ export function SetRows({ workoutExerciseId, sets }: SetRowsProps) {
                 <input type="hidden" name="workoutExerciseId" value={workoutExerciseId} />
                 <button
                   type="submit"
-                  aria-label="Borrar serie"
+                  aria-label={t("setRows.deleteSet")}
                   className="-m-2 p-2 text-chalk-dim hover:text-plate-red"
                 >
                   ✕
@@ -43,7 +45,7 @@ export function SetRows({ workoutExerciseId, sets }: SetRowsProps) {
         <input type="hidden" name="workoutExerciseId" value={workoutExerciseId} />
 
         <label className="flex min-w-0 flex-1 basis-16 flex-col gap-1 text-xs tracking-wide text-chalk-dim uppercase">
-          Reps
+          {t("setRows.reps")}
           <input
             type="number"
             name="reps"
@@ -57,7 +59,7 @@ export function SetRows({ workoutExerciseId, sets }: SetRowsProps) {
         </label>
 
         <label className="flex min-w-0 flex-1 basis-20 flex-col gap-1 text-xs tracking-wide text-chalk-dim uppercase">
-          Peso
+          {t("setRows.weight")}
           <input
             type="number"
             name="weight"
@@ -72,7 +74,7 @@ export function SetRows({ workoutExerciseId, sets }: SetRowsProps) {
         </label>
 
         <label className="flex shrink-0 flex-col gap-1 text-xs tracking-wide text-chalk-dim uppercase">
-          Unidad
+          {t("setRows.unit")}
           <select
             name="unit"
             defaultValue={lastSet?.unit ?? "kg"}
@@ -87,7 +89,7 @@ export function SetRows({ workoutExerciseId, sets }: SetRowsProps) {
           type="submit"
           className="basis-full border border-plate-red bg-plate-red px-3 py-2 text-sm font-medium text-chalk transition-colors active:bg-plate-red-dim sm:basis-auto"
         >
-          + Serie
+          {t("setRows.addSet")}
         </button>
       </form>
     </div>

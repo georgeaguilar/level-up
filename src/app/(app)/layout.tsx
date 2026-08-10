@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getProfile, verifySession } from "@/lib/dal";
 import { signOut } from "@/app/(auth)/actions";
+import { getDictionary } from "@/i18n/server";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 
 export default async function AppLayout({
   children,
@@ -8,7 +10,7 @@ export default async function AppLayout({
   children: React.ReactNode;
 }) {
   await verifySession();
-  const profile = await getProfile();
+  const [profile, { locale, dict, t }] = await Promise.all([getProfile(), getDictionary()]);
 
   return (
     <div className="flex flex-1 flex-col">
@@ -22,20 +24,21 @@ export default async function AppLayout({
           </Link>
           <nav className="flex flex-wrap items-center justify-end gap-3 text-xs font-medium tracking-wide text-chalk-dim uppercase sm:gap-4">
             <Link href="/" className="transition-colors hover:text-chalk">
-              Hoy
+              {t("nav.today")}
             </Link>
             <Link href="/history" className="transition-colors hover:text-chalk">
-              Historial
+              {t("nav.history")}
             </Link>
             <Link href="/progress" className="transition-colors hover:text-chalk">
-              Progreso
+              {t("nav.progress")}
             </Link>
+            <LocaleSwitcher locale={locale} dict={dict} />
             <span className="hidden normal-case text-iron-bright sm:inline">
               {profile?.display_name}
             </span>
             <form action={signOut}>
               <button type="submit" className="transition-colors hover:text-plate-red">
-                Salir
+                {t("nav.signOut")}
               </button>
             </form>
           </nav>

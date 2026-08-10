@@ -12,6 +12,9 @@ import {
 } from "recharts";
 import type { CardioProgressPoint, ExerciseProgressPoint } from "@/lib/types";
 import { PlateBadge } from "@/components/plate-badge";
+import { useI18n } from "@/i18n/client";
+import { formatNumber, formatWorkoutDate } from "@/i18n/format";
+import type { TranslationKey } from "@/i18n/dictionary";
 
 // Colores de los tokens en globals.css — recharts necesita valores concretos, no var().
 const PLATE_RED = "#d6432c";
@@ -22,23 +25,12 @@ const CHALK_DIM = "#a89d88";
 const SURFACE = "#211d17";
 
 const METRICS = {
-  maxWeightKg: { label: "Peso máximo", badgeLabel: "PESO MÁXIMO", tone: "red", color: PLATE_RED },
-  volumeKg: { label: "Volumen total", badgeLabel: "VOLUMEN TOTAL", tone: "blue", color: PLATE_BLUE },
-  estimated1RmKg: { label: "1RM estimado", badgeLabel: "1RM ESTIMADO", tone: "gold", color: PLATE_GOLD },
-} as const;
+  maxWeightKg: { labelKey: "progress.metric.maxWeight", tone: "red", color: PLATE_RED },
+  volumeKg: { labelKey: "progress.metric.volume", tone: "blue", color: PLATE_BLUE },
+  estimated1RmKg: { labelKey: "progress.metric.estimated1Rm", tone: "gold", color: PLATE_GOLD },
+} satisfies Record<string, { labelKey: TranslationKey; tone: "red" | "blue" | "gold"; color: string }>;
 
 type Metric = keyof typeof METRICS;
-
-function formatDate(iso: string) {
-  return new Date(`${iso}T00:00:00`).toLocaleDateString("es", {
-    day: "numeric",
-    month: "short",
-  });
-}
-
-function formatTooltipLabel(label: React.ReactNode) {
-  return typeof label === "string" ? formatDate(label) : "";
-}
 
 const tooltipStyle = {
   background: SURFACE,
@@ -49,14 +41,15 @@ const tooltipStyle = {
 };
 
 export function ProgressChart({ data }: { data: ExerciseProgressPoint[] }) {
+  const { locale, t } = useI18n();
   const [metric, setMetric] = useState<Metric>("maxWeightKg");
 
+  function formatTooltipLabel(label: React.ReactNode) {
+    return typeof label === "string" ? formatWorkoutDate(label, locale, "short") : "";
+  }
+
   if (data.length === 0) {
-    return (
-      <p className="text-sm text-chalk-dim">
-        Todavía no hay series registradas para este ejercicio.
-      </p>
-    );
+    return <p className="text-sm text-chalk-dim">{t("progress.noSetsYet")}</p>;
   }
 
   const active = METRICS[metric];
@@ -65,9 +58,9 @@ export function ProgressChart({ data }: { data: ExerciseProgressPoint[] }) {
   return (
     <div className="flex min-w-0 flex-col gap-4">
       <PlateBadge
-        value={latest.toLocaleString("es")}
+        value={formatNumber(latest, locale)}
         unit="kg"
-        label={active.badgeLabel}
+        label={t(active.labelKey)}
         tone={active.tone}
       />
 
@@ -83,7 +76,7 @@ export function ProgressChart({ data }: { data: ExerciseProgressPoint[] }) {
                 : "border-iron text-chalk-dim hover:border-iron-bright"
             }`}
           >
-            {METRICS[key].label}
+            {t(METRICS[key].labelKey)}
           </button>
         ))}
       </div>
@@ -94,7 +87,7 @@ export function ProgressChart({ data }: { data: ExerciseProgressPoint[] }) {
             <CartesianGrid strokeDasharray="3 3" stroke={IRON} />
             <XAxis
               dataKey="date"
-              tickFormatter={formatDate}
+              tickFormatter={(iso: string) => formatWorkoutDate(iso, locale, "short")}
               fontSize={12}
               stroke={CHALK_DIM}
               minTickGap={16}
@@ -117,12 +110,14 @@ export function ProgressChart({ data }: { data: ExerciseProgressPoint[] }) {
 }
 
 export function CardioChart({ data }: { data: CardioProgressPoint[] }) {
+  const { locale, t } = useI18n();
+
+  function formatTooltipLabel(label: React.ReactNode) {
+    return typeof label === "string" ? formatWorkoutDate(label, locale, "short") : "";
+  }
+
   if (data.length === 0) {
-    return (
-      <p className="text-sm text-chalk-dim">
-        Todavía no hay tiempos registrados para este ejercicio.
-      </p>
-    );
+    return <p className="text-sm text-chalk-dim">{t("progress.noCardioYet")}</p>;
   }
 
   const chartData = data.map((point) => ({
@@ -133,7 +128,12 @@ export function CardioChart({ data }: { data: CardioProgressPoint[] }) {
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <PlateBadge value={latest.toLocaleString("es")} unit="min" label="ÚLTIMO TIEMPO" tone="blue" />
+      <PlateBadge
+        value={formatNumber(latest, locale)}
+        unit="min"
+        label={t("progress.lastTime")}
+        tone="blue"
+      />
 
       <div className="h-56 w-full min-w-0 sm:h-64">
         <ResponsiveContainer width="100%" height="100%">
@@ -141,7 +141,7 @@ export function CardioChart({ data }: { data: CardioProgressPoint[] }) {
             <CartesianGrid strokeDasharray="3 3" stroke={IRON} />
             <XAxis
               dataKey="date"
-              tickFormatter={formatDate}
+              tickFormatter={(iso: string) => formatWorkoutDate(iso, locale, "short")}
               fontSize={12}
               stroke={CHALK_DIM}
               minTickGap={16}

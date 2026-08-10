@@ -27,7 +27,7 @@ export function PlateBadge({ value, unit, label, tone = "red" }: PlateBadgeProps
         </span>
       </div>
       <div className="flex min-w-0 flex-col gap-0.5">
-        <span className="font-display text-xs tracking-[0.2em] text-chalk-dim break-words">
+        <span className="font-display text-xs tracking-[0.2em] text-chalk-dim uppercase break-words">
           {label}
         </span>
         {unit && <span className="font-mono text-sm text-chalk-dim">{unit}</span>}

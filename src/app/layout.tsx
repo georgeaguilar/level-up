@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Bebas_Neue, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import { getDictionary } from "@/i18n/server";
+import { I18nProvider } from "@/i18n/client";
 import "./globals.css";
 
 const bebasNeue = Bebas_Neue({
@@ -20,23 +22,32 @@ const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Level Up",
-  description: "Registra tu entrenamiento y sigue tu progresión en el gym.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getDictionary();
+  return {
+    title: "Level Up",
+    description: t("meta.description"),
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: "#17140f",
   viewportFit: "cover",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const { locale, dict } = await getDictionary();
+
   return (
     <html
-      lang="es"
+      lang={locale}
       className={`${bebasNeue.variable} ${plexSans.variable} ${plexMono.variable} antialiased`}
     >
-      <body className="min-h-dvh flex flex-col bg-floor text-chalk">{children}</body>
+      <body className="min-h-dvh flex flex-col bg-floor text-chalk">
+        <I18nProvider locale={locale} dictionary={dict}>
+          {children}
+        </I18nProvider>
+      </body>
     </html>
   );
 }
