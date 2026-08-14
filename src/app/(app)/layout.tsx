@@ -4,6 +4,7 @@ import { signOut } from "@/app/(auth)/actions";
 import { getDictionary } from "@/i18n/server";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { InstallPrompt } from "@/components/install-prompt";
+import { BottomNav } from "@/components/bottom-nav";
 
 export default async function AppLayout({
   children,
@@ -16,14 +17,14 @@ export default async function AppLayout({
   return (
     <div className="flex flex-1 flex-col">
       <header className="sticky top-0 z-10 border-b border-iron bg-floor/95 pt-[env(safe-area-inset-top)] backdrop-blur">
-        <div className="mx-auto flex w-full max-w-2xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3">
+        <div className="mx-auto flex w-full max-w-2xl items-center justify-center px-4 py-3 sm:flex-wrap sm:justify-between sm:gap-x-4 sm:gap-y-2">
           <Link
             href="/"
             className="font-display text-2xl tracking-wide text-chalk"
           >
             LEVEL <span className="text-plate-red">UP</span>
           </Link>
-          <nav className="flex flex-wrap items-center justify-end gap-3 text-xs font-medium tracking-wide text-chalk-dim uppercase sm:gap-4">
+          <nav className="hidden items-center justify-end gap-3 text-xs font-medium tracking-wide text-chalk-dim uppercase sm:flex sm:flex-wrap sm:gap-4">
             <Link href="/" className="transition-colors hover:text-chalk">
               {t("nav.today")}
             </Link>
@@ -32,6 +33,9 @@ export default async function AppLayout({
             </Link>
             <Link href="/progress" className="transition-colors hover:text-chalk">
               {t("nav.progress")}
+            </Link>
+            <Link href="/profile" className="transition-colors hover:text-chalk">
+              {t("nav.profile")}
             </Link>
             <LocaleSwitcher locale={locale} dict={dict} />
             <span className="hidden normal-case text-iron-bright sm:inline">
@@ -46,9 +50,10 @@ export default async function AppLayout({
         </div>
       </header>
       <InstallPrompt />
-      <main className="mx-auto w-full max-w-2xl flex-1 px-4 pt-6 pb-[calc(3rem+env(safe-area-inset-bottom))]">
+      <main className="mx-auto w-full max-w-2xl flex-1 px-4 pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:pb-[calc(3rem+env(safe-area-inset-bottom))]">
         {children}
       </main>
+      <BottomNav />
     </div>
   );
 }
