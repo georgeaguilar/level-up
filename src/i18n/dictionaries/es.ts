@@ -15,6 +15,7 @@ export const es = {
     today: "Hoy",
     history: "Historial",
     progress: "Progreso",
+    profile: "Perfil",
     signOut: "Salir",
   },
   install: {
@@ -30,6 +31,12 @@ export const es = {
   },
   history: {
     title: "Historial",
+  },
+  profile: {
+    title: "Perfil",
+    account: "Cuenta",
+    language: "Idioma",
+    signOut: "Cerrar sesión",
   },
   workout: {
     deleteWorkout: "Borrar entrenamiento",

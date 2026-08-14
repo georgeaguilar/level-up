@@ -16,6 +16,7 @@ export const en = {
     today: "Today",
     history: "History",
     progress: "Progress",
+    profile: "Profile",
     signOut: "Sign out",
   },
   install: {
@@ -31,6 +32,12 @@ export const en = {
   },
   history: {
     title: "History",
+  },
+  profile: {
+    title: "Profile",
+    account: "Account",
+    language: "Language",
+    signOut: "Sign out",
   },
   workout: {
     deleteWorkout: "Delete workout",
