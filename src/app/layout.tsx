@@ -27,6 +27,11 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Level Up",
     description: t("meta.description"),
+    appleWebApp: {
+      capable: true,
+      title: "Level Up",
+      statusBarStyle: "default",
+    },
   };
 }
 

@@ -18,6 +18,12 @@ export const en = {
     progress: "Progress",
     signOut: "Sign out",
   },
+  install: {
+    title: "Install Level Up",
+    instructions:
+      'Tap the Share button in Safari and choose "Add to Home Screen" to open it like an app.',
+    dismiss: "Dismiss",
+  },
   dashboard: {
     trainToday: "Train today",
     recentWorkouts: "Recent workouts",

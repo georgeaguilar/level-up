@@ -17,6 +17,12 @@ export const es = {
     progress: "Progreso",
     signOut: "Salir",
   },
+  install: {
+    title: "Instala Level Up",
+    instructions:
+      "Toca el botón Compartir de Safari y elige \"Añadir a pantalla de inicio\" para abrirla como una app.",
+    dismiss: "Cerrar",
+  },
   dashboard: {
     trainToday: "Entrenar hoy",
     recentWorkouts: "Últimos entrenamientos",

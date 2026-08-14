@@ -3,6 +3,7 @@ import { getProfile, verifySession } from "@/lib/dal";
 import { signOut } from "@/app/(auth)/actions";
 import { getDictionary } from "@/i18n/server";
 import { LocaleSwitcher } from "@/components/locale-switcher";
+import { InstallPrompt } from "@/components/install-prompt";
 
 export default async function AppLayout({
   children,
@@ -14,7 +15,7 @@ export default async function AppLayout({
 
   return (
     <div className="flex flex-1 flex-col">
-      <header className="sticky top-0 z-10 border-b border-iron bg-floor/95 backdrop-blur">
+      <header className="sticky top-0 z-10 border-b border-iron bg-floor/95 pt-[env(safe-area-inset-top)] backdrop-blur">
         <div className="mx-auto flex w-full max-w-2xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3">
           <Link
             href="/"
@@ -44,6 +45,7 @@ export default async function AppLayout({
           </nav>
         </div>
       </header>
+      <InstallPrompt />
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 pt-6 pb-[calc(3rem+env(safe-area-inset-bottom))]">
         {children}
       </main>
