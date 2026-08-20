@@ -16,7 +16,6 @@ export const es = {
     history: "Historial",
     progress: "Progreso",
     profile: "Perfil",
-    signOut: "Salir",
   },
   install: {
     title: "Instala Level Up",

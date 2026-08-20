@@ -1,8 +1,5 @@
 import Link from "next/link";
-import { getProfile, verifySession } from "@/lib/dal";
-import { signOut } from "@/app/(auth)/actions";
-import { getDictionary } from "@/i18n/server";
-import { LocaleSwitcher } from "@/components/locale-switcher";
+import { verifySession } from "@/lib/dal";
 import { InstallPrompt } from "@/components/install-prompt";
 import { BottomNav } from "@/components/bottom-nav";
 import { DesktopNav } from "@/components/desktop-nav";
@@ -13,7 +10,6 @@ export default async function AppLayout({
   children: React.ReactNode;
 }) {
   await verifySession();
-  const [profile, { locale, dict, t }] = await Promise.all([getProfile(), getDictionary()]);
 
   return (
     <div className="flex flex-1 flex-col">
@@ -27,15 +23,6 @@ export default async function AppLayout({
           </Link>
           <nav className="hidden items-center justify-end gap-3 text-xs font-medium tracking-wide text-chalk-dim uppercase sm:flex sm:flex-wrap sm:gap-4">
             <DesktopNav />
-            <LocaleSwitcher locale={locale} dict={dict} />
-            <span className="hidden normal-case text-iron-bright sm:inline">
-              {profile?.display_name}
-            </span>
-            <form action={signOut}>
-              <button type="submit" className="cursor-pointer transition-colors duration-fast ease-brand hover:text-plate-red">
-                {t("nav.signOut")}
-              </button>
-            </form>
           </nav>
         </div>
       </header>
