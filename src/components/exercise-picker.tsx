@@ -12,35 +12,15 @@ import {
   sortExercises,
 } from "@/lib/exercise-display";
 import { EquipmentIcon } from "@/components/equipment-icon";
+import { Card } from "@/components/ui/card";
+import { Input, Select } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { SegmentedButton, SegmentedGroup } from "@/components/ui/segmented";
 
 type ExercisePickerProps = {
   workoutId: string;
   exercises: Exercise[];
 };
-
-function FilterChip({
-  active,
-  label,
-  onClick,
-}: {
-  active: boolean;
-  label: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`border px-2.5 py-1 text-xs font-medium tracking-wide uppercase transition-colors ${
-        active
-          ? "border-chalk bg-chalk text-floor"
-          : "border-iron text-chalk-dim hover:border-iron-bright"
-      }`}
-    >
-      {label}
-    </button>
-  );
-}
 
 /**
  * Selector de ejercicio del catálogo (global + propios): busca por nombre en
@@ -71,15 +51,13 @@ export function ExercisePicker({ workoutId, exercises }: ExercisePickerProps) {
   });
 
   return (
-    <div className="flex flex-col gap-3 border border-iron bg-surface p-4">
-      <h3 className="font-display text-sm tracking-[0.2em] text-chalk-dim uppercase">
-        {t("exercisePicker.heading")}
-      </h3>
+    <Card className="flex flex-col gap-3 rounded-lg">
+      <h3 className="text-label text-chalk-dim">{t("exercisePicker.heading")}</h3>
 
       <form action={addExerciseToWorkout} className="flex flex-col gap-3">
         <input type="hidden" name="workoutId" value={workoutId} />
 
-        <input
+        <Input
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
@@ -88,46 +66,43 @@ export function ExercisePicker({ workoutId, exercises }: ExercisePickerProps) {
             if (event.key === "Enter") event.preventDefault();
           }}
           placeholder={t("exercisePicker.searchPlaceholder")}
-          className="border border-iron bg-floor px-3 py-2 text-base text-chalk placeholder:text-chalk-dim"
         />
 
         {availableMuscleGroups.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            <FilterChip
-              active={muscleGroup === null}
-              label={t("exercisePicker.allMuscles")}
-              onClick={() => setMuscleGroup(null)}
-            />
+          <SegmentedGroup className="gap-1.5">
+            <SegmentedButton active={muscleGroup === null} onClick={() => setMuscleGroup(null)}>
+              {t("exercisePicker.allMuscles")}
+            </SegmentedButton>
             {availableMuscleGroups.map((mg) => (
-              <FilterChip
+              <SegmentedButton
                 key={mg}
                 active={muscleGroup === mg}
-                label={t(`muscleGroup.${mg}`)}
                 onClick={() => setMuscleGroup((current) => (current === mg ? null : mg))}
-              />
+              >
+                {t(`muscleGroup.${mg}`)}
+              </SegmentedButton>
             ))}
-          </div>
+          </SegmentedGroup>
         )}
 
         {availableEquipment.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            <FilterChip
-              active={equipment === null}
-              label={t("exercisePicker.allEquipment")}
-              onClick={() => setEquipment(null)}
-            />
+          <SegmentedGroup className="gap-1.5">
+            <SegmentedButton active={equipment === null} onClick={() => setEquipment(null)}>
+              {t("exercisePicker.allEquipment")}
+            </SegmentedButton>
             {availableEquipment.map((eq) => (
-              <FilterChip
+              <SegmentedButton
                 key={eq}
                 active={equipment === eq}
-                label={t(`equipment.${eq}`)}
                 onClick={() => setEquipment((current) => (current === eq ? null : eq))}
-              />
+              >
+                {t(`equipment.${eq}`)}
+              </SegmentedButton>
             ))}
-          </div>
+          </SegmentedGroup>
         )}
 
-        <div className="flex max-h-64 flex-col overflow-y-auto border border-iron">
+        <div className="flex max-h-64 flex-col overflow-y-auto rounded-sm border border-iron">
           {filtered.length === 0 ? (
             <p className="p-3 text-sm text-chalk-dim">{t("exercisePicker.noResults")}</p>
           ) : (
@@ -137,7 +112,7 @@ export function ExercisePicker({ workoutId, exercises }: ExercisePickerProps) {
                 type="submit"
                 name="exerciseId"
                 value={exercise.id}
-                className="flex w-full items-center gap-3 border-b border-iron px-3 py-2.5 text-left transition-colors last:border-b-0 hover:bg-floor active:bg-floor"
+                className="flex w-full cursor-pointer items-center gap-3 border-b border-iron px-3 py-2.5 text-left transition-colors duration-fast ease-brand last:border-b-0 hover:bg-surface-raised active:bg-surface-raised"
               >
                 <EquipmentIcon
                   equipment={exercise.equipment}
@@ -168,58 +143,36 @@ export function ExercisePicker({ workoutId, exercises }: ExercisePickerProps) {
         </summary>
         <form action={createCustomExercise} className="mt-3 flex flex-col gap-2">
           <input type="hidden" name="workoutId" value={workoutId} />
-          <input
-            type="text"
-            name="name"
-            placeholder={t("exercisePicker.namePlaceholder")}
-            required
-            maxLength={80}
-            className="border border-iron bg-floor px-3 py-2 text-base text-chalk placeholder:text-chalk-dim"
-          />
+          <Input type="text" name="name" placeholder={t("exercisePicker.namePlaceholder")} required maxLength={80} />
           <div className="flex gap-2">
-            <select
-              name="kind"
-              defaultValue="strength"
-              className="min-w-0 flex-1 border border-iron bg-floor px-3 py-2 text-base text-chalk"
-            >
+            <Select name="kind" defaultValue="strength" className="min-w-0 flex-1">
               <option value="strength">{t("exerciseKind.strength")}</option>
               <option value="cardio">{t("exerciseKind.cardio")}</option>
-            </select>
+            </Select>
           </div>
           <div className="flex gap-2">
-            <select
-              name="muscleGroup"
-              defaultValue=""
-              className="min-w-0 flex-1 border border-iron bg-floor px-3 py-2 text-base text-chalk"
-            >
+            <Select name="muscleGroup" defaultValue="" className="min-w-0 flex-1">
               <option value="">{t("exercisePicker.muscleGroupOptional")}</option>
               {MUSCLE_GROUPS.map((mg) => (
                 <option key={mg} value={mg}>
                   {t(`muscleGroup.${mg}`)}
                 </option>
               ))}
-            </select>
-            <select
-              name="equipment"
-              defaultValue=""
-              className="min-w-0 flex-1 border border-iron bg-floor px-3 py-2 text-base text-chalk"
-            >
+            </Select>
+            <Select name="equipment" defaultValue="" className="min-w-0 flex-1">
               <option value="">{t("exercisePicker.equipmentOptional")}</option>
               {EQUIPMENT_OPTIONS.map((eq) => (
                 <option key={eq} value={eq}>
                   {t(`equipment.${eq}`)}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
-          <button
-            type="submit"
-            className="shrink-0 border border-iron-bright px-4 py-2 text-sm font-medium text-chalk hover:border-chalk-dim"
-          >
+          <Button type="submit" variant="secondary" size="sm" className="shrink-0">
             {t("exercisePicker.createAndAdd")}
-          </button>
+          </Button>
         </form>
       </details>
-    </div>
+    </Card>
   );
 }

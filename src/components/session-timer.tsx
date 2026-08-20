@@ -5,6 +5,7 @@ import {
 } from "@/app/(app)/workouts/actions";
 import { getDictionary } from "@/i18n/server";
 import { formatClockTime, formatDuration } from "@/i18n/format";
+import { Button } from "@/components/ui/button";
 
 type SessionTimerProps = {
   workoutId: string;
@@ -24,12 +25,9 @@ export async function SessionTimer({ workoutId, startedAt, endedAt }: SessionTim
     return (
       <form action={startWorkoutSession}>
         <input type="hidden" name="workoutId" value={workoutId} />
-        <button
-          type="submit"
-          className="border border-iron px-3 py-2 text-sm font-medium text-chalk transition-colors hover:border-iron-bright active:bg-iron"
-        >
+        <Button type="submit" variant="secondary" size="sm">
           {t("workout.sessionStart")}
-        </button>
+        </Button>
       </form>
     );
   }
@@ -42,12 +40,9 @@ export async function SessionTimer({ workoutId, startedAt, endedAt }: SessionTim
         </span>
         <form action={finishWorkoutSession}>
           <input type="hidden" name="workoutId" value={workoutId} />
-          <button
-            type="submit"
-            className="border border-iron px-3 py-2 text-sm font-medium text-chalk transition-colors hover:border-iron-bright active:bg-iron"
-          >
+          <Button type="submit" variant="secondary" size="sm">
             {t("workout.sessionFinish")}
-          </button>
+          </Button>
         </form>
       </div>
     );
@@ -63,9 +58,9 @@ export async function SessionTimer({ workoutId, startedAt, endedAt }: SessionTim
       </span>
       <form action={resetWorkoutSession}>
         <input type="hidden" name="workoutId" value={workoutId} />
-        <button type="submit" className="-m-2 p-2 text-sm text-chalk-dim hover:text-plate-red">
+        <Button type="submit" variant="danger">
           {t("workout.sessionReset")}
-        </button>
+        </Button>
       </form>
     </div>
   );

@@ -1,5 +1,8 @@
 import { setCardioDuration } from "@/app/(app)/workouts/actions";
 import { getDictionary } from "@/i18n/server";
+import { Field } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 type CardioDurationProps = {
   workoutExerciseId: string;
@@ -14,14 +17,15 @@ export async function CardioDuration({
   const minutes = durationSeconds ? Math.floor(durationSeconds / 60) : undefined;
   const seconds = durationSeconds ? durationSeconds % 60 : undefined;
   const { t } = await getDictionary();
+  const idFor = (field: string) => `${workoutExerciseId}-${field}`;
 
   return (
     <form action={setCardioDuration} className="flex flex-wrap items-end gap-2">
       <input type="hidden" name="workoutExerciseId" value={workoutExerciseId} />
 
-      <label className="flex min-w-0 flex-1 basis-20 flex-col gap-1 text-xs tracking-wide text-chalk-dim uppercase">
-        {t("cardioDuration.minutes")}
-        <input
+      <Field label={t("cardioDuration.minutes")} htmlFor={idFor("minutes")} className="min-w-0 flex-1 basis-20">
+        <Input
+          id={idFor("minutes")}
           type="number"
           name="minutes"
           inputMode="numeric"
@@ -29,13 +33,13 @@ export async function CardioDuration({
           max={600}
           required
           defaultValue={minutes}
-          className="w-full border border-iron bg-floor px-2 py-2 font-mono text-base text-chalk"
+          className="font-mono"
         />
-      </label>
+      </Field>
 
-      <label className="flex min-w-0 flex-1 basis-20 flex-col gap-1 text-xs tracking-wide text-chalk-dim uppercase">
-        {t("cardioDuration.seconds")}
-        <input
+      <Field label={t("cardioDuration.seconds")} htmlFor={idFor("seconds")} className="min-w-0 flex-1 basis-20">
+        <Input
+          id={idFor("seconds")}
           type="number"
           name="seconds"
           inputMode="numeric"
@@ -43,16 +47,17 @@ export async function CardioDuration({
           max={59}
           required
           defaultValue={seconds ?? 0}
-          className="w-full border border-iron bg-floor px-2 py-2 font-mono text-base text-chalk"
+          className="font-mono"
         />
-      </label>
+      </Field>
 
-      <button
+      <Button
         type="submit"
-        className="basis-full border border-plate-blue bg-plate-blue-dim px-3 py-2 text-sm font-medium text-chalk transition-colors hover:bg-plate-blue sm:basis-auto"
+        size="sm"
+        className="basis-full border-plate-blue bg-plate-blue-dim hover:bg-plate-blue active:bg-plate-blue-dim sm:basis-auto"
       >
         {t("cardioDuration.save")}
-      </button>
+      </Button>
     </form>
   );
 }

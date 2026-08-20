@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { notFound } from "next/navigation";
 import { getExercises, getWorkout } from "@/lib/dal";
 import { deleteWorkout } from "@/app/(app)/workouts/actions";
@@ -5,6 +6,7 @@ import { ExercisePicker } from "@/components/exercise-picker";
 import { WorkoutExerciseCard } from "@/components/workout-exercise-card";
 import { PlateBadge } from "@/components/plate-badge";
 import { SessionTimer } from "@/components/session-timer";
+import { Button } from "@/components/ui/button";
 import type { WorkoutWithExercises } from "@/lib/types";
 import { getDictionary } from "@/i18n/server";
 import { formatNumber, formatWorkoutDate } from "@/i18n/format";
@@ -47,9 +49,9 @@ export default async function WorkoutPage(props: PageProps<"/workouts/[id]">) {
         </h1>
         <form action={deleteWorkout} className="shrink-0">
           <input type="hidden" name="workoutId" value={workout.id} />
-          <button type="submit" className="-m-2 p-2 text-sm text-chalk-dim hover:text-plate-red">
+          <Button type="submit" variant="danger">
             {t("workout.deleteWorkout")}
-          </button>
+          </Button>
         </form>
       </div>
 
@@ -67,8 +69,10 @@ export default async function WorkoutPage(props: PageProps<"/workouts/[id]">) {
         <p className="text-sm text-chalk-dim">{t("workout.noExercisesToday")}</p>
       ) : (
         <div className="flex flex-col gap-4">
-          {sortedExercises.map((workoutExercise) => (
-            <WorkoutExerciseCard key={workoutExercise.id} workoutExercise={workoutExercise} />
+          {sortedExercises.map((workoutExercise, index) => (
+            <div key={workoutExercise.id} className="stagger-item" style={{ "--stagger-index": index } as CSSProperties}>
+              <WorkoutExerciseCard workoutExercise={workoutExercise} />
+            </div>
           ))}
         </div>
       )}
