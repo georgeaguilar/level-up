@@ -100,3 +100,90 @@ export type CardioProgressPoint = {
   date: string;
   durationSeconds: number;
 };
+
+// ---------------------------------------------------------------------------
+// Dashboard de analítica (/progress, pestaña "Resumen")
+// ---------------------------------------------------------------------------
+
+export type DashboardRange = 4 | 12 | 52;
+
+/** % de cambio vs. el periodo anterior. `null` = no había base con qué comparar. */
+export type Delta = number | null;
+
+export type PeriodTotals = {
+  tonnageKg: number;
+  sets: number;
+  reps: number;
+  workouts: number;
+  avgRepsPerSet: number;
+  avgRir: number | null;
+  /** Fracción 0..1 de series con RIR registrado en el periodo. */
+  rirCoverage: number;
+  avgSessionMinutes: number | null;
+  timedSessions: number;
+  workoutsPerWeek: number;
+  weeksTrained: number;
+};
+
+export type PeriodDeltas = {
+  tonnageKg: Delta;
+  sets: Delta;
+  reps: Delta;
+  workouts: Delta;
+  avgRepsPerSet: Delta;
+  avgRir: Delta;
+  avgSessionMinutes: Delta;
+  workoutsPerWeek: Delta;
+};
+
+export type MuscleGroupStat = {
+  group: MuscleGroup;
+  sets: number;
+  tonnageKg: number;
+  /** Sesiones distintas que entrenaron el grupo en el periodo. */
+  sessions: number;
+  sessionsPerWeek: number;
+  bestE1rmKg: number | null;
+  volumeDelta: Delta;
+  strengthDelta: Delta;
+  frequencyDelta: Delta;
+};
+
+export type PersonalRecord = {
+  exerciseId: string;
+  name: string;
+  nameEn: string | null;
+  muscleGroup: MuscleGroup | null;
+  date: string; // YYYY-MM-DD
+  reps: number;
+  weightKg: number;
+  e1rmKg: number;
+  /** Mejor marca previa a este set. `null` = primera vez que se registra el ejercicio. */
+  previousE1rmKg: number | null;
+  kind: "e1rm" | "weight" | "both";
+};
+
+export type WeeklyPoint = {
+  weekStart: string; // lunes, YYYY-MM-DD
+  tonnageKg: number;
+  sets: number;
+  workouts: number;
+};
+
+export type DashboardData = {
+  range: DashboardRange;
+  periodStart: string;
+  periodEnd: string;
+  previousStart: string;
+  previousEnd: string;
+  current: PeriodTotals;
+  previous: PeriodTotals;
+  deltas: PeriodDeltas;
+  /** Desc por tonnageKg. Sin grupos con cero series en ambos periodos. */
+  muscleGroups: MuscleGroupStat[];
+  /** Desc por fecha. Máx. un récord por ejercicio (el más reciente/mejor). */
+  records: PersonalRecord[];
+  /** Solo el periodo actual, longitud === range. */
+  weekly: WeeklyPoint[];
+  hasData: boolean;
+};
