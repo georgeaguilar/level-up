@@ -15,14 +15,7 @@ import { PlateBadge } from "@/components/plate-badge";
 import { useI18n } from "@/i18n/client";
 import { formatNumber, formatWorkoutDate } from "@/i18n/format";
 import type { TranslationKey } from "@/i18n/dictionary";
-
-// Colores de los tokens en globals.css — recharts necesita valores concretos, no var().
-const PLATE_RED = "#d6432c";
-const PLATE_BLUE = "#4a86ac";
-const PLATE_GOLD = "#d9a62e";
-const IRON = "#3a342a";
-const CHALK_DIM = "#a89d88";
-const SURFACE = "#211d17";
+import { CHALK_DIM, IRON, PLATE_BLUE, PLATE_GOLD, PLATE_RED, tooltipStyle } from "@/lib/chart-theme";
 
 const METRICS = {
   maxWeightKg: { labelKey: "progress.metric.maxWeight", tone: "red", color: PLATE_RED },
@@ -31,14 +24,6 @@ const METRICS = {
 } satisfies Record<string, { labelKey: TranslationKey; tone: "red" | "blue" | "gold"; color: string }>;
 
 type Metric = keyof typeof METRICS;
-
-const tooltipStyle = {
-  background: SURFACE,
-  border: `1px solid ${IRON}`,
-  borderRadius: 0,
-  color: "#f3eee3",
-  fontSize: 13,
-};
 
 export function ProgressChart({ data }: { data: ExerciseProgressPoint[] }) {
   const { locale, t } = useI18n();
