@@ -3,6 +3,9 @@
 import { useActionState } from "react";
 import type { AuthFormState } from "@/app/(auth)/actions";
 import { useI18n } from "@/i18n/client";
+import { Field } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 type AuthFormProps = {
   action: (state: AuthFormState, formData: FormData) => Promise<AuthFormState>;
@@ -19,68 +22,39 @@ export function AuthForm({ action, mode }: AuthFormProps) {
   return (
     <form action={formAction} className="flex flex-col gap-4">
       {mode === "signup" && (
-        <div className="flex flex-col gap-1">
-          <label htmlFor="displayName" className="text-xs tracking-wide text-chalk-dim uppercase">
-            {t("auth.form.nameLabel")}
-          </label>
-          <input
-            id="displayName"
-            name="displayName"
-            type="text"
-            required
-            autoComplete="name"
-            className="border border-iron bg-floor px-3 py-2 text-base text-chalk"
-          />
-        </div>
+        <Field label={t("auth.form.nameLabel")} htmlFor="displayName">
+          <Input id="displayName" name="displayName" type="text" required autoComplete="name" />
+        </Field>
       )}
 
-      <div className="flex flex-col gap-1">
-        <label htmlFor="email" className="text-xs tracking-wide text-chalk-dim uppercase">
-          {t("auth.form.emailLabel")}
-        </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          required
-          autoComplete="email"
-          inputMode="email"
-          className="border border-iron bg-floor px-3 py-2 text-base text-chalk"
-        />
-      </div>
+      <Field label={t("auth.form.emailLabel")} htmlFor="email">
+        <Input id="email" name="email" type="email" required autoComplete="email" inputMode="email" />
+      </Field>
 
-      <div className="flex flex-col gap-1">
-        <label htmlFor="password" className="text-xs tracking-wide text-chalk-dim uppercase">
-          {t("auth.form.passwordLabel")}
-        </label>
-        <input
+      <Field label={t("auth.form.passwordLabel")} htmlFor="password">
+        <Input
           id="password"
           name="password"
           type="password"
           required
           minLength={6}
           autoComplete={mode === "signup" ? "new-password" : "current-password"}
-          className="border border-iron bg-floor px-3 py-2 text-base text-chalk"
         />
-      </div>
+      </Field>
 
       {state?.error && (
-        <p aria-live="polite" className="text-sm text-plate-red">
+        <p aria-live="polite" role="alert" className="text-sm text-plate-red">
           {state.error}
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="mt-2 border border-plate-red bg-plate-red px-4 py-2.5 text-base font-medium text-chalk transition-colors disabled:opacity-60 active:bg-plate-red-dim"
-      >
+      <Button type="submit" disabled={pending} className="mt-2">
         {pending
           ? t("auth.form.pending")
           : mode === "signup"
             ? t("auth.form.createAccount")
             : t("auth.form.signIn")}
-      </button>
+      </Button>
     </form>
   );
 }
