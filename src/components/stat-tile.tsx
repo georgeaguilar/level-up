@@ -1,4 +1,5 @@
 import { DeltaBadge } from "@/components/delta-badge";
+import { Card } from "@/components/ui/card";
 import type { Delta } from "@/lib/types";
 
 type StatTileProps = {
@@ -13,8 +14,10 @@ type StatTileProps = {
 /** Celda de KPI: label, número y delta opcional vs. el periodo anterior. */
 export function StatTile({ label, value, unit, delta, invert, muted }: StatTileProps) {
   return (
-    <div className="flex flex-col gap-1 border border-iron bg-surface p-3">
-      <span className="font-display text-xs tracking-[0.2em] text-chalk-dim uppercase">{label}</span>
+    <Card padding="sm" className="flex flex-col gap-1">
+      <span className="text-label block truncate text-chalk-dim" title={label} aria-label={label}>
+        {label}
+      </span>
       <div className="flex items-baseline gap-1">
         <span className={`font-mono text-xl tabular-nums ${muted ? "text-chalk-dim" : "text-chalk"}`}>
           {value}
@@ -22,6 +25,6 @@ export function StatTile({ label, value, unit, delta, invert, muted }: StatTileP
         {unit && <span className="font-mono text-xs text-chalk-dim">{unit}</span>}
       </div>
       {delta !== undefined && <DeltaBadge value={delta} invert={invert} />}
-    </div>
+    </Card>
   );
 }

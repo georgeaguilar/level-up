@@ -1,4 +1,5 @@
 import { DeltaBadge } from "@/components/delta-badge";
+import { Card } from "@/components/ui/card";
 import { getDictionary } from "@/i18n/server";
 import { formatNumber } from "@/i18n/format";
 import type { MuscleGroupStat } from "@/lib/types";
@@ -19,10 +20,8 @@ export async function MuscleGroupCards({ groups }: MuscleGroupCardsProps) {
   return (
     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
       {groups.map((group) => (
-        <div key={group.group} className="flex flex-col gap-2 border border-iron bg-surface p-3">
-          <span className="font-display text-sm tracking-wide text-chalk uppercase">
-            {t(`muscleGroup.${group.group}`)}
-          </span>
+        <Card key={group.group} variant="raised" padding="sm" className="flex flex-col gap-2">
+          <span className="text-label text-chalk">{t(`muscleGroup.${group.group}`)}</span>
           <dl className="flex flex-col gap-1 text-sm">
             <div className="flex items-center justify-between gap-2">
               <dt className="text-chalk-dim">{t("analytics.muscle.volume")}</dt>
@@ -48,7 +47,7 @@ export async function MuscleGroupCards({ groups }: MuscleGroupCardsProps) {
               </dd>
             </div>
           </dl>
-        </div>
+        </Card>
       ))}
     </div>
   );

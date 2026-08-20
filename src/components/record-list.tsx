@@ -27,7 +27,7 @@ export async function RecordList({ records }: RecordListProps) {
         return (
           <li
             key={record.exerciseId}
-            className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border border-iron bg-floor px-3 py-2 text-sm"
+            className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-sm border border-iron bg-surface-raised px-3 py-2 text-sm shadow-elev-1"
           >
             <div className="flex min-w-0 flex-col">
               <span className="text-chalk">{name}</span>
@@ -42,7 +42,7 @@ export async function RecordList({ records }: RecordListProps) {
               {gainKg !== null ? (
                 <span className="text-plate-gold">+{formatNumber(gainKg, locale)} kg</span>
               ) : (
-                <span className="border border-plate-gold px-1.5 py-0.5 text-xs tracking-wide text-plate-gold uppercase">
+                <span className="text-label rounded-full border border-plate-gold px-2 py-0.5 text-plate-gold">
                   {t("analytics.records.first")}
                 </span>
               )}
