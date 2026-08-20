@@ -26,6 +26,11 @@ export function formatNumber(value: number, locale: Locale): string {
   return value.toLocaleString(BCP47[locale]);
 }
 
+/** "agosto de 2026" / "August 2026" — encabezado de grupo mensual en /history. */
+export function formatMonthHeading(iso: string, locale: Locale): string {
+  return new Date(`${iso}T00:00:00`).toLocaleDateString(BCP47[locale], { month: "long", year: "numeric" });
+}
+
 /** Hora local del timestamptz, formato corto (18:42 / 6:42 PM). */
 export function formatClockTime(iso: string, locale: Locale): string {
   return new Date(iso).toLocaleTimeString(BCP47[locale], { hour: "numeric", minute: "2-digit" });
