@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useI18n } from "@/i18n/client";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 const DISMISSED_KEY = "install-prompt-dismissed";
 
@@ -49,22 +51,23 @@ export function InstallPrompt() {
 
   return (
     <div className="mx-auto w-full max-w-2xl px-4 pt-3">
-      <div className="flex items-start gap-3 border border-iron bg-surface px-4 py-3 text-sm">
+      <Card padding="sm" className="flex items-start gap-3 text-sm">
         <div className="flex-1">
           <p className="font-medium text-chalk">{t("install.title")}</p>
           <p className="mt-1 text-chalk-dim">{t("install.instructions")}</p>
         </div>
-        <button
+        <Button
           type="button"
+          variant="ghost"
           onClick={() => {
             localStorage.setItem(DISMISSED_KEY, "true");
             setVisible(false);
           }}
-          className="shrink-0 text-plate-gold transition-colors hover:text-chalk"
+          className="shrink-0 text-plate-gold hover:text-chalk"
         >
           {t("install.dismiss")}
-        </button>
-      </div>
+        </Button>
+      </Card>
     </div>
   );
 }

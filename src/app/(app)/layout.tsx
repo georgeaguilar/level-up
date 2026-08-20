@@ -5,6 +5,7 @@ import { getDictionary } from "@/i18n/server";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { InstallPrompt } from "@/components/install-prompt";
 import { BottomNav } from "@/components/bottom-nav";
+import { DesktopNav } from "@/components/desktop-nav";
 
 export default async function AppLayout({
   children,
@@ -25,24 +26,13 @@ export default async function AppLayout({
             LEVEL <span className="text-plate-red">UP</span>
           </Link>
           <nav className="hidden items-center justify-end gap-3 text-xs font-medium tracking-wide text-chalk-dim uppercase sm:flex sm:flex-wrap sm:gap-4">
-            <Link href="/" className="transition-colors hover:text-chalk">
-              {t("nav.today")}
-            </Link>
-            <Link href="/history" className="transition-colors hover:text-chalk">
-              {t("nav.history")}
-            </Link>
-            <Link href="/progress" className="transition-colors hover:text-chalk">
-              {t("nav.progress")}
-            </Link>
-            <Link href="/profile" className="transition-colors hover:text-chalk">
-              {t("nav.profile")}
-            </Link>
+            <DesktopNav />
             <LocaleSwitcher locale={locale} dict={dict} />
             <span className="hidden normal-case text-iron-bright sm:inline">
               {profile?.display_name}
             </span>
             <form action={signOut}>
-              <button type="submit" className="transition-colors hover:text-plate-red">
+              <button type="submit" className="cursor-pointer transition-colors duration-fast ease-brand hover:text-plate-red">
                 {t("nav.signOut")}
               </button>
             </form>
@@ -50,7 +40,10 @@ export default async function AppLayout({
         </div>
       </header>
       <InstallPrompt />
-      <main className="mx-auto w-full max-w-2xl flex-1 px-4 pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:pb-[calc(3rem+env(safe-area-inset-bottom))]">
+      {/* max-w-2xl es el ancho por defecto de toda la app (registro con una
+          mano, en el gym). /progress marca su raíz con data-page="wide" para
+          pedir más aire en escritorio — el resto de pantallas no lo hace. */}
+      <main className="mx-auto w-full max-w-2xl flex-1 px-4 pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] transition-[max-width] duration-base ease-brand sm:pb-[calc(3rem+env(safe-area-inset-bottom))] lg:has-[[data-page=wide]]:max-w-5xl">
         {children}
       </main>
       <BottomNav />

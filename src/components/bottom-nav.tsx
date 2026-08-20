@@ -70,7 +70,7 @@ export function BottomNav() {
 
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-20 flex justify-center px-4 sm:hidden">
-      <nav className="pointer-events-auto flex items-center gap-1 rounded-full border border-iron bg-surface/85 p-2 backdrop-blur">
+      <nav className="shadow-elev-3 pointer-events-auto flex items-center gap-1 rounded-full border border-iron bg-surface/90 p-2 backdrop-blur">
         {TABS.map(({ href, labelKey, icon }) => {
           const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
           const label = t(labelKey);
@@ -81,8 +81,8 @@ export function BottomNav() {
               href={href}
               aria-label={label}
               aria-current={isActive ? "page" : undefined}
-              className={`flex h-11 w-14 items-center justify-center rounded-full transition-colors ${
-                isActive ? "bg-iron text-chalk" : "text-chalk-dim hover:text-chalk"
+              className={`flex h-11 w-14 items-center justify-center rounded-full transition-[background-color,color,transform] duration-fast ease-brand active:scale-90 ${
+                isActive ? "bg-surface-raised text-chalk shadow-elev-1" : "text-chalk-dim hover:text-chalk"
               }`}
             >
               <svg {...SHARED}>{icon}</svg>
