@@ -112,11 +112,11 @@ export async function getWorkout(
     .from("workouts")
     .select(
       `
-      id, user_id, date, notes,
+      id, user_id, date, notes, started_at, ended_at,
       workout_exercises (
         id, workout_id, exercise_id, position, duration_seconds,
         exercise:exercises ( ${EXERCISE_COLUMNS} ),
-        sets:exercise_sets ( id, workout_exercise_id, set_number, reps, weight, unit )
+        sets:exercise_sets ( id, workout_exercise_id, set_number, reps, weight, unit, rir )
       )
     `,
     )

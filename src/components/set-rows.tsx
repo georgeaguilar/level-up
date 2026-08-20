@@ -24,6 +24,7 @@ export async function SetRows({ workoutExerciseId, sets }: SetRowsProps) {
               <span className="font-mono text-chalk-dim">#{set.set_number}</span>
               <span className="flex-1 text-right font-mono text-chalk">
                 {set.reps} reps × {set.weight} {set.unit}
+                {set.rir !== null && <span className="text-chalk-dim"> · RIR {set.rir}</span>}
               </span>
               <form action={deleteSet}>
                 <input type="hidden" name="setId" value={set.id} />
@@ -82,6 +83,26 @@ export async function SetRows({ workoutExerciseId, sets }: SetRowsProps) {
           >
             <option value="kg">kg</option>
             <option value="lb">lb</option>
+          </select>
+        </label>
+
+        <label className="flex shrink-0 flex-col gap-1 text-xs tracking-wide text-chalk-dim uppercase">
+          {t("setRows.rir")}
+          {/* Sin prellenar: a diferencia de reps/peso, un valor de relleno
+              escribiría un RIR que el usuario no pensó y envenenaría el
+              promedio del dashboard. */}
+          <select
+            name="rir"
+            defaultValue=""
+            className="border border-iron bg-floor px-2 py-2 text-base text-chalk"
+          >
+            <option value="">{t("setRows.rirNone")}</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
           </select>
         </label>
 

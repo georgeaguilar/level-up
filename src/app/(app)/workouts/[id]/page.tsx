@@ -4,6 +4,7 @@ import { deleteWorkout } from "@/app/(app)/workouts/actions";
 import { ExercisePicker } from "@/components/exercise-picker";
 import { WorkoutExerciseCard } from "@/components/workout-exercise-card";
 import { PlateBadge } from "@/components/plate-badge";
+import { SessionTimer } from "@/components/session-timer";
 import type { WorkoutWithExercises } from "@/lib/types";
 import { getDictionary } from "@/i18n/server";
 import { formatNumber, formatWorkoutDate } from "@/i18n/format";
@@ -51,6 +52,8 @@ export default async function WorkoutPage(props: PageProps<"/workouts/[id]">) {
           </button>
         </form>
       </div>
+
+      <SessionTimer workoutId={workout.id} startedAt={workout.started_at} endedAt={workout.ended_at} />
 
       {volume > 0 && (
         <PlateBadge

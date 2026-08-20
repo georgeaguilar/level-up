@@ -61,6 +61,8 @@ export type ExerciseSet = {
   reps: number;
   weight: number;
   unit: WeightUnit;
+  /** Reps en reserva (0 = al fallo). `null` = no registrado en esta serie. */
+  rir: number | null;
 };
 
 export type WorkoutExercise = {
@@ -78,6 +80,9 @@ export type Workout = {
   user_id: string;
   date: string; // YYYY-MM-DD
   notes: string | null;
+  /** Hora en que se marcó el inicio/fin de la sesión. `null` = no registrado. */
+  started_at: string | null; // timestamptz ISO
+  ended_at: string | null; // timestamptz ISO
 };
 
 export type WorkoutWithExercises = Workout & {

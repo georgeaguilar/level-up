@@ -25,3 +25,20 @@ export function formatWorkoutDate(iso: string, locale: Locale, style: DateStyle 
 export function formatNumber(value: number, locale: Locale): string {
   return value.toLocaleString(BCP47[locale]);
 }
+
+/** Hora local del timestamptz, formato corto (18:42 / 6:42 PM). */
+export function formatClockTime(iso: string, locale: Locale): string {
+  return new Date(iso).toLocaleTimeString(BCP47[locale], { hour: "numeric", minute: "2-digit" });
+}
+
+/** Minutos a "83 min" o "1 h 23 min" cuando pasa de una hora. */
+export function formatDuration(minutes: number, locale: Locale): string {
+  const rounded = Math.round(minutes);
+  if (rounded < 60) return `${formatNumber(rounded, locale)} min`;
+
+  const hours = Math.floor(rounded / 60);
+  const rest = rounded % 60;
+  return rest === 0
+    ? `${formatNumber(hours, locale)} h`
+    : `${formatNumber(hours, locale)} h ${formatNumber(rest, locale)} min`;
+}

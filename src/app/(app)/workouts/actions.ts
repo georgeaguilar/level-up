@@ -96,7 +96,9 @@ export async function addExerciseToWorkout(formData: FormData) {
 }
 
 // El <select> de grupo muscular/equipo es opcional y envía "" sin elegir nada.
-const emptyToUndefined = (value: unknown) => (value === "" ? undefined : value);
+// El de RIR además puede venir ausente del todo (formularios ya renderizados
+// antes de este campo), y ahí formData.get() devuelve null en vez de "".
+const emptyToUndefined = (value: unknown) => (value === "" || value === null ? undefined : value);
 
 const createCustomExerciseSchema = z.object({
   workoutId: z.string().uuid(),
@@ -218,15 +220,18 @@ const addSetSchema = z.object({
   reps: z.coerce.number().int().min(1).max(1000),
   weight: z.coerce.number().min(0).max(2000),
   unit: z.enum(["kg", "lb"]),
+  // Reps en reserva: opcional, sin prellenar. El select manda "" si no se elige.
+  rir: z.preprocess(emptyToUndefined, z.coerce.number().int().min(0).max(10).optional()),
 });
 
 export async function addSet(formData: FormData) {
   const { userId } = await verifySession();
-  const { workoutExerciseId, reps, weight, unit } = addSetSchema.parse({
+  const { workoutExerciseId, reps, weight, unit, rir } = addSetSchema.parse({
     workoutExerciseId: formData.get("workoutExerciseId"),
     reps: formData.get("reps"),
     weight: formData.get("weight"),
     unit: formData.get("unit"),
+    rir: formData.get("rir"),
   });
 
   const workoutId = await assertOwnsWorkoutExercise(workoutExerciseId, userId);
@@ -243,6 +248,7 @@ export async function addSet(formData: FormData) {
     reps,
     weight,
     unit,
+    rir: rir ?? null,
   });
 
   if (error) throw error;
@@ -268,6 +274,66 @@ export async function deleteSet(formData: FormData) {
 
   if (error) throw error;
   revalidatePath(`/workouts/${workoutId}`);
+}
+
+const sessionSchema = z.object({ workoutId: z.string().uuid() });
+
+/** Marca el inicio de la sesión. Si ya estaba iniciada, no hace nada (evita
+ * que un doble submit reinicie el reloj). */
+export async function startWorkoutSession(formData: FormData) {
+  const { userId } = await verifySession();
+  const { workoutId } = sessionSchema.parse({ workoutId: formData.get("workoutId") });
+
+  await assertOwnsWorkout(workoutId, userId);
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("workouts")
+    .update({ started_at: new Date().toISOString(), ended_at: null })
+    .eq("id", workoutId)
+    .is("started_at", null);
+
+  if (error) throw error;
+  revalidatePath(`/workouts/${workoutId}`);
+  revalidatePath("/progress");
+}
+
+/** Marca el fin de la sesión. Solo aplica si ya estaba iniciada y aún no
+ * terminada. */
+export async function finishWorkoutSession(formData: FormData) {
+  const { userId } = await verifySession();
+  const { workoutId } = sessionSchema.parse({ workoutId: formData.get("workoutId") });
+
+  await assertOwnsWorkout(workoutId, userId);
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("workouts")
+    .update({ ended_at: new Date().toISOString() })
+    .eq("id", workoutId)
+    .not("started_at", "is", null)
+    .is("ended_at", null);
+
+  if (error) throw error;
+  revalidatePath(`/workouts/${workoutId}`);
+  revalidatePath("/progress");
+}
+
+export async function resetWorkoutSession(formData: FormData) {
+  const { userId } = await verifySession();
+  const { workoutId } = sessionSchema.parse({ workoutId: formData.get("workoutId") });
+
+  await assertOwnsWorkout(workoutId, userId);
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("workouts")
+    .update({ started_at: null, ended_at: null })
+    .eq("id", workoutId);
+
+  if (error) throw error;
+  revalidatePath(`/workouts/${workoutId}`);
+  revalidatePath("/progress");
 }
 
 const deleteWorkoutSchema = z.object({ workoutId: z.string().uuid() });
