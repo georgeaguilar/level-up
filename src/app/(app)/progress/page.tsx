@@ -1,84 +1,20 @@
-import { getCardioProgress, getExerciseProgress, getLoggedExercises } from "@/lib/dal";
-import { CardioChart, ProgressChart } from "@/components/progress-chart";
+import { ProgressTabs } from "@/components/progress-tabs";
+import { SummaryTab } from "@/app/(app)/progress/summary-tab";
+import { ByExerciseTab } from "@/app/(app)/progress/by-exercise-tab";
 import { getDictionary } from "@/i18n/server";
-import { exerciseName, sortExercises } from "@/lib/exercise-display";
+import { parseProgressParams } from "@/lib/progress-params";
 
 export default async function ProgressPage(props: PageProps<"/progress">) {
   const searchParams = await props.searchParams;
-  const requestedId =
-    typeof searchParams.exercise === "string" ? searchParams.exercise : undefined;
-
-  const [loggedExercises, { locale, t }] = await Promise.all([
-    getLoggedExercises(),
-    getDictionary(),
-  ]);
-  const exercises = sortExercises(loggedExercises, locale);
-  const selected = exercises.find((e) => e.id === requestedId) ?? exercises[0];
-
-  const strength = exercises.filter((e) => e.kind === "strength");
-  const cardio = exercises.filter((e) => e.kind === "cardio");
-
-  const data = selected
-    ? selected.kind === "strength"
-      ? await getExerciseProgress(selected.id)
-      : await getCardioProgress(selected.id)
-    : null;
+  const params = parseProgressParams(searchParams);
+  const { t } = await getDictionary();
 
   return (
     <div className="enter flex flex-col gap-6">
       <h1 className="font-display text-2xl tracking-wide">{t("progress.title")}</h1>
-
-      {exercises.length === 0 ? (
-        <p className="text-sm text-chalk-dim">{t("progress.noLoggedExercises")}</p>
-      ) : (
-        <>
-          <form action="/progress" method="get" className="flex gap-2">
-            <select
-              name="exercise"
-              defaultValue={selected?.id}
-              className="min-w-0 flex-1 border border-iron bg-surface px-3 py-2 text-base text-chalk"
-            >
-              {strength.length > 0 && (
-                <optgroup label={t("exerciseKind.strength")}>
-                  {strength.map((exercise) => (
-                    <option key={exercise.id} value={exercise.id}>
-                      {exerciseName(exercise, locale)}
-                    </option>
-                  ))}
-                </optgroup>
-              )}
-              {cardio.length > 0 && (
-                <optgroup label={t("exerciseKind.cardio")}>
-                  {cardio.map((exercise) => (
-                    <option key={exercise.id} value={exercise.id}>
-                      {exerciseName(exercise, locale)}
-                    </option>
-                  ))}
-                </optgroup>
-              )}
-            </select>
-            <button
-              type="submit"
-              className="shrink-0 border border-plate-red bg-plate-red px-4 py-2 text-sm font-medium text-chalk transition-colors active:bg-plate-red-dim"
-            >
-              {t("progress.viewButton")}
-            </button>
-          </form>
-
-          {selected && (
-            <div>
-              <h2 className="mb-3 font-display text-lg tracking-wide text-chalk-dim">
-                {exerciseName(selected, locale)}
-              </h2>
-              {selected.kind === "strength" ? (
-                <ProgressChart data={data as Awaited<ReturnType<typeof getExerciseProgress>>} />
-              ) : (
-                <CardioChart data={data as Awaited<ReturnType<typeof getCardioProgress>>} />
-              )}
-            </div>
-          )}
-        </>
-      )}
+      <ProgressTabs params={params} />
+      {/* Solo se renderiza (y hace fetch) la pestaña activa. */}
+      {params.tab === "resumen" ? <SummaryTab params={params} /> : <ByExerciseTab params={params} />}
     </div>
   );
 }
