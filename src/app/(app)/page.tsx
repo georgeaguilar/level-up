@@ -1,37 +1,69 @@
+import type { CSSProperties } from "react";
 import Link from "next/link";
-import { getRecentWorkouts } from "@/lib/dal";
+import { getDashboard, getRecentWorkouts } from "@/lib/dal";
 import { goToTodayWorkout } from "@/app/(app)/workouts/actions";
 import { getDictionary } from "@/i18n/server";
-import { formatWorkoutDate } from "@/i18n/format";
+import { formatNumber, formatWorkoutDate } from "@/i18n/format";
+import { Button } from "@/components/ui/button";
+import { StatTile } from "@/components/stat-tile";
+import { cardClasses } from "@/components/ui/card";
+import { cn } from "@/lib/cn";
 
 export default async function DashboardPage() {
-  const [workouts, { locale, t }] = await Promise.all([getRecentWorkouts(), getDictionary()]);
+  const [workouts, dashboard, { locale, t }] = await Promise.all([
+    getRecentWorkouts(),
+    getDashboard(4),
+    getDictionary(),
+  ]);
 
   return (
-    <div className="enter flex flex-col gap-10">
+    <div className="enter flex flex-col gap-8">
       <form action={goToTodayWorkout}>
-        <button
-          type="submit"
-          className="w-full border-2 border-plate-red bg-plate-red px-4 py-5 font-display text-3xl tracking-wide uppercase text-chalk transition-[transform,background-color] active:scale-[0.99] active:bg-plate-red-dim"
-        >
+        <Button type="submit" size="lg" className="w-full rounded-lg border-2 shadow-elev-2">
           {t("dashboard.trainToday")}
-        </button>
+        </Button>
       </form>
 
+      {dashboard.hasData && (
+        <section className="flex flex-col gap-3">
+          <h2 className="text-label text-chalk-dim">{t("dashboard.last4Weeks")}</h2>
+          <div className="grid grid-cols-3 gap-2">
+            <StatTile
+              label={t("analytics.kpi.tonnage")}
+              value={formatNumber(dashboard.current.tonnageKg, locale)}
+              unit={t("analytics.units.kg")}
+              delta={dashboard.deltas.tonnageKg}
+            />
+            <StatTile
+              label={t("analytics.kpi.workouts")}
+              value={formatNumber(dashboard.current.workouts, locale)}
+              delta={dashboard.deltas.workouts}
+            />
+            <StatTile
+              label={t("analytics.kpi.sets")}
+              value={formatNumber(dashboard.current.sets, locale)}
+              delta={dashboard.deltas.sets}
+            />
+          </div>
+        </section>
+      )}
+
       <section className="flex flex-col gap-3">
-        <h2 className="font-display text-sm tracking-[0.2em] text-chalk-dim uppercase">
-          {t("dashboard.recentWorkouts")}
-        </h2>
+        <h2 className="text-label text-chalk-dim">{t("dashboard.recentWorkouts")}</h2>
 
         {workouts.length === 0 ? (
           <p className="text-sm text-chalk-dim">{t("dashboard.noWorkouts")}</p>
         ) : (
           <ul className="flex flex-col gap-2">
-            {workouts.map((workout) => (
-              <li key={workout.id}>
+            {workouts.map((workout, index) => (
+              <li
+                key={workout.id}
+                className="stagger-item"
+                style={{ "--stagger-index": index } as CSSProperties}
+              >
                 <Link
                   href={`/workouts/${workout.id}`}
-                  className="block border border-iron bg-surface px-4 py-3 capitalize text-chalk transition-colors hover:border-plate-red"
+                  className={cn(cardClasses({ variant: "interactive", padding: "md" }), "block capitalize text-chalk")}
                 >
                   {formatWorkoutDate(workout.date, locale, "long")}
                 </Link>
