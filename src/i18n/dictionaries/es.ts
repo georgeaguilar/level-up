@@ -26,11 +26,13 @@ export const es = {
   },
   dashboard: {
     trainToday: "Entrenar hoy",
+    last4Weeks: "Últimas 4 semanas",
     recentWorkouts: "Últimos entrenamientos",
     noWorkouts: "Todavía no registras ningún entrenamiento.",
   },
   history: {
     title: "Historial",
+    empty: "Registra tu primer entrenamiento para verlo aquí.",
   },
   profile: {
     title: "Perfil",

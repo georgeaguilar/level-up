@@ -27,11 +27,13 @@ export const en = {
   },
   dashboard: {
     trainToday: "Train today",
+    last4Weeks: "Last 4 weeks",
     recentWorkouts: "Recent workouts",
     noWorkouts: "You haven't logged a workout yet.",
   },
   history: {
     title: "History",
+    empty: "Log your first workout to see it here.",
   },
   profile: {
     title: "Profile",
