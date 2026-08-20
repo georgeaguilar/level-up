@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { getDictionary } from "@/i18n/server";
 import { DASHBOARD_RANGES, progressHref, type ProgressParams } from "@/lib/progress-params";
+import { SegmentedGroup, SegmentedLink } from "@/components/ui/segmented";
 
 const RANGE_LABEL_KEYS = {
   4: "analytics.range.w4",
@@ -13,24 +13,12 @@ export async function RangePicker({ params }: { params: ProgressParams }) {
   const { t } = await getDictionary();
 
   return (
-    <div className="flex flex-wrap gap-2">
-      {DASHBOARD_RANGES.map((range) => {
-        const isActive = params.range === range;
-        return (
-          <Link
-            key={range}
-            href={progressHref(params, { range })}
-            aria-current={isActive ? "page" : undefined}
-            className={`border px-3 py-1 text-xs font-medium tracking-wide uppercase transition-colors ${
-              isActive
-                ? "border-chalk bg-chalk text-floor"
-                : "border-iron text-chalk-dim hover:border-iron-bright"
-            }`}
-          >
-            {t(RANGE_LABEL_KEYS[range])}
-          </Link>
-        );
-      })}
-    </div>
+    <SegmentedGroup>
+      {DASHBOARD_RANGES.map((range) => (
+        <SegmentedLink key={range} href={progressHref(params, { range })} active={params.range === range}>
+          {t(RANGE_LABEL_KEYS[range])}
+        </SegmentedLink>
+      ))}
+    </SegmentedGroup>
   );
 }

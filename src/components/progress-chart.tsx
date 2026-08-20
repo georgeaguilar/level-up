@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import {
+  Area,
   CartesianGrid,
+  ComposedChart,
   Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -16,6 +17,7 @@ import { useI18n } from "@/i18n/client";
 import { formatNumber, formatWorkoutDate } from "@/i18n/format";
 import type { TranslationKey } from "@/i18n/dictionary";
 import { CHALK_DIM, IRON, PLATE_BLUE, PLATE_GOLD, PLATE_RED, tooltipStyle } from "@/lib/chart-theme";
+import { SegmentedButton, SegmentedGroup } from "@/components/ui/segmented";
 
 const METRICS = {
   maxWeightKg: { labelKey: "progress.metric.maxWeight", tone: "red", color: PLATE_RED },
@@ -39,6 +41,7 @@ export function ProgressChart({ data }: { data: ExerciseProgressPoint[] }) {
 
   const active = METRICS[metric];
   const latest = data[data.length - 1][metric];
+  const gradientId = `progress-gradient-${metric}`;
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
@@ -49,27 +52,24 @@ export function ProgressChart({ data }: { data: ExerciseProgressPoint[] }) {
         tone={active.tone}
       />
 
-      <div className="flex flex-wrap gap-2">
+      <SegmentedGroup>
         {(Object.keys(METRICS) as Metric[]).map((key) => (
-          <button
-            key={key}
-            type="button"
-            onClick={() => setMetric(key)}
-            className={`border px-3 py-1 text-xs font-medium tracking-wide uppercase transition-colors ${
-              metric === key
-                ? "border-chalk bg-chalk text-floor"
-                : "border-iron text-chalk-dim hover:border-iron-bright"
-            }`}
-          >
+          <SegmentedButton key={key} active={metric === key} onClick={() => setMetric(key)}>
             {t(METRICS[key].labelKey)}
-          </button>
+          </SegmentedButton>
         ))}
-      </div>
+      </SegmentedGroup>
 
       <div className="h-56 w-full min-w-0 sm:h-64">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke={IRON} />
+          <ComposedChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
+            <defs>
+              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={active.color} stopOpacity={0.28} />
+                <stop offset="100%" stopColor={active.color} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke={IRON} strokeOpacity={0.6} vertical={false} />
             <XAxis
               dataKey="date"
               tickFormatter={(iso: string) => formatWorkoutDate(iso, locale, "short")}
@@ -80,14 +80,16 @@ export function ProgressChart({ data }: { data: ExerciseProgressPoint[] }) {
             />
             <YAxis fontSize={12} width={40} stroke={CHALK_DIM} />
             <Tooltip labelFormatter={formatTooltipLabel} contentStyle={tooltipStyle} />
+            <Area type="monotone" dataKey={metric} stroke="none" fill={`url(#${gradientId})`} fillOpacity={1} />
             <Line
               type="monotone"
               dataKey={metric}
               stroke={active.color}
-              strokeWidth={2}
+              strokeWidth={2.5}
               dot={{ fill: active.color, strokeWidth: 0, r: 3 }}
+              activeDot={{ r: 5 }}
             />
-          </LineChart>
+          </ComposedChart>
         </ResponsiveContainer>
       </div>
     </div>
@@ -122,8 +124,14 @@ export function CardioChart({ data }: { data: CardioProgressPoint[] }) {
 
       <div className="h-56 w-full min-w-0 sm:h-64">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke={IRON} />
+          <ComposedChart data={chartData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
+            <defs>
+              <linearGradient id="cardio-gradient-minutes" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={PLATE_BLUE} stopOpacity={0.28} />
+                <stop offset="100%" stopColor={PLATE_BLUE} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke={IRON} strokeOpacity={0.6} vertical={false} />
             <XAxis
               dataKey="date"
               tickFormatter={(iso: string) => formatWorkoutDate(iso, locale, "short")}
@@ -134,14 +142,22 @@ export function CardioChart({ data }: { data: CardioProgressPoint[] }) {
             />
             <YAxis fontSize={12} width={40} unit="m" stroke={CHALK_DIM} />
             <Tooltip labelFormatter={formatTooltipLabel} contentStyle={tooltipStyle} />
+            <Area
+              type="monotone"
+              dataKey="minutes"
+              stroke="none"
+              fill="url(#cardio-gradient-minutes)"
+              fillOpacity={1}
+            />
             <Line
               type="monotone"
               dataKey="minutes"
               stroke={PLATE_BLUE}
-              strokeWidth={2}
+              strokeWidth={2.5}
               dot={{ fill: PLATE_BLUE, strokeWidth: 0, r: 3 }}
+              activeDot={{ r: 5 }}
             />
-          </LineChart>
+          </ComposedChart>
         </ResponsiveContainer>
       </div>
     </div>

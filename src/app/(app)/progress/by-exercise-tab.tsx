@@ -2,6 +2,9 @@ import { getCardioProgress, getExerciseProgress, getLoggedExercises } from "@/li
 import { CardioChart, ProgressChart } from "@/components/progress-chart";
 import { getDictionary } from "@/i18n/server";
 import { exerciseName, sortExercises } from "@/lib/exercise-display";
+import { Select } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import type { ProgressParams } from "@/lib/progress-params";
 
 /** Pestaña "Por ejercicio": gráfica de progresión de un solo ejercicio (comportamiento original de /progress). */
@@ -24,18 +27,14 @@ export async function ByExerciseTab({ params }: { params: ProgressParams }) {
     : null;
 
   return (
-    <>
+    <div className="flex flex-col gap-6">
       <form action="/progress" method="get" className="flex gap-2">
         {/* Un GET <form> reemplaza el query string completo: sin estos dos
             hidden inputs se perdería la pestaña y el rango al cambiar de
             ejercicio. */}
         <input type="hidden" name="tab" value="ejercicio" />
         <input type="hidden" name="range" value={params.range} />
-        <select
-          name="exercise"
-          defaultValue={selected?.id}
-          className="min-w-0 flex-1 border border-iron bg-surface px-3 py-2 text-base text-chalk"
-        >
+        <Select name="exercise" defaultValue={selected?.id} className="min-w-0 flex-1">
           {strength.length > 0 && (
             <optgroup label={t("exerciseKind.strength")}>
               {strength.map((exercise) => (
@@ -54,27 +53,22 @@ export async function ByExerciseTab({ params }: { params: ProgressParams }) {
               ))}
             </optgroup>
           )}
-        </select>
-        <button
-          type="submit"
-          className="shrink-0 border border-plate-red bg-plate-red px-4 py-2 text-sm font-medium text-chalk transition-colors active:bg-plate-red-dim"
-        >
+        </Select>
+        <Button type="submit" size="sm" className="shrink-0">
           {t("progress.viewButton")}
-        </button>
+        </Button>
       </form>
 
       {selected && (
-        <div>
-          <h2 className="mb-3 font-display text-lg tracking-wide text-chalk-dim">
-            {exerciseName(selected, locale)}
-          </h2>
+        <Card padding="md" className="rounded-lg">
+          <h2 className="mb-3 text-base font-semibold text-chalk">{exerciseName(selected, locale)}</h2>
           {selected.kind === "strength" ? (
             <ProgressChart data={data as Awaited<ReturnType<typeof getExerciseProgress>>} />
           ) : (
             <CardioChart data={data as Awaited<ReturnType<typeof getCardioProgress>>} />
           )}
-        </div>
+        </Card>
       )}
-    </>
+    </div>
   );
 }

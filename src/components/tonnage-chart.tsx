@@ -7,6 +7,7 @@ import { useI18n } from "@/i18n/client";
 import { formatWorkoutDate } from "@/i18n/format";
 import type { TranslationKey } from "@/i18n/dictionary";
 import { CHALK_DIM, IRON, PLATE_BLUE, PLATE_GOLD, PLATE_RED, tooltipStyle } from "@/lib/chart-theme";
+import { SegmentedButton, SegmentedGroup } from "@/components/ui/segmented";
 
 const METRICS = {
   tonnageKg: { labelKey: "analytics.chart.tonnage", color: PLATE_RED },
@@ -33,27 +34,18 @@ export function TonnageChart({ data }: { data: WeeklyPoint[] }) {
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <div className="flex flex-wrap gap-2">
+      <SegmentedGroup>
         {(Object.keys(METRICS) as Metric[]).map((key) => (
-          <button
-            key={key}
-            type="button"
-            onClick={() => setMetric(key)}
-            className={`border px-3 py-1 text-xs font-medium tracking-wide uppercase transition-colors ${
-              metric === key
-                ? "border-chalk bg-chalk text-floor"
-                : "border-iron text-chalk-dim hover:border-iron-bright"
-            }`}
-          >
+          <SegmentedButton key={key} active={metric === key} onClick={() => setMetric(key)}>
             {t(METRICS[key].labelKey)}
-          </button>
+          </SegmentedButton>
         ))}
-      </div>
+      </SegmentedGroup>
 
       <div className="h-56 w-full min-w-0 sm:h-64">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke={IRON} />
+            <CartesianGrid strokeDasharray="3 3" stroke={IRON} strokeOpacity={0.6} vertical={false} />
             <XAxis
               dataKey="weekStart"
               tickFormatter={(iso: string) => formatWorkoutDate(iso, locale, "short")}
@@ -63,8 +55,8 @@ export function TonnageChart({ data }: { data: WeeklyPoint[] }) {
               interval="preserveStartEnd"
             />
             <YAxis fontSize={12} width={40} stroke={CHALK_DIM} />
-            <Tooltip labelFormatter={formatTooltipLabel} contentStyle={tooltipStyle} />
-            <Bar dataKey={metric} fill={active.color} />
+            <Tooltip labelFormatter={formatTooltipLabel} contentStyle={tooltipStyle} cursor={{ fill: IRON, opacity: 0.3 }} />
+            <Bar dataKey={metric} fill={active.color} radius={[6, 6, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

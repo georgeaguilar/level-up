@@ -10,7 +10,7 @@ export default async function ProgressPage(props: PageProps<"/progress">) {
   const { t } = await getDictionary();
 
   return (
-    <div className="enter flex flex-col gap-6">
+    <div data-page="wide" className="enter flex flex-col gap-6">
       <h1 className="font-display text-2xl tracking-wide">{t("progress.title")}</h1>
       <ProgressTabs params={params} />
       {/* Solo se renderiza (y hace fetch) la pestaña activa. */}
