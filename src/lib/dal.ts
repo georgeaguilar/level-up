@@ -15,6 +15,7 @@ import type {
   PeriodDeltas,
   PeriodTotals,
   PersonalRecord,
+  RoutineTemplateWithExercises,
   WeeklyPoint,
   WeightUnit,
   WorkoutWithExercises,
@@ -156,6 +157,71 @@ export async function getWorkoutByDate(date: string) {
 
   if (error) throw error;
   return data;
+}
+
+// ---------------------------------------------------------------------------
+// Plantillas de rutina
+// ---------------------------------------------------------------------------
+
+/**
+ * Todas las plantillas del usuario con sus ejercicios ya resueltos. Se trae
+ * el ejercicio completo (no solo el nombre) porque los tres consumidores
+ * —/templates, /templates/[id] y el bloque "aplicar" de /workouts/[id]—
+ * pintan el ícono de equipo y el nombre en el idioma activo. Son unidades de
+ * plantillas × ~10 ejercicios: una sola query, sin N+1 y sin paginar.
+ */
+export async function getRoutineTemplates(): Promise<RoutineTemplateWithExercises[]> {
+  const { userId } = await verifySession();
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("routine_templates")
+    .select(
+      `
+      id, user_id, name, created_at,
+      routine_template_exercises (
+        id, template_id, exercise_id, position,
+        exercise:exercises ( ${EXERCISE_COLUMNS} )
+      )
+    `,
+    )
+    .eq("user_id", userId)
+    .order("name", { ascending: true })
+    .order("position", {
+      referencedTable: "routine_template_exercises",
+      ascending: true,
+    });
+
+  if (error) throw error;
+  return data as unknown as RoutineTemplateWithExercises[];
+}
+
+export async function getRoutineTemplate(
+  templateId: string,
+): Promise<RoutineTemplateWithExercises | null> {
+  await verifySession();
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("routine_templates")
+    .select(
+      `
+      id, user_id, name, created_at,
+      routine_template_exercises (
+        id, template_id, exercise_id, position,
+        exercise:exercises ( ${EXERCISE_COLUMNS} )
+      )
+    `,
+    )
+    .eq("id", templateId)
+    .order("position", {
+      referencedTable: "routine_template_exercises",
+      ascending: true,
+    })
+    .maybeSingle();
+
+  if (error) throw error;
+  return data as unknown as RoutineTemplateWithExercises | null;
 }
 
 /**

@@ -89,6 +89,32 @@ export type WorkoutWithExercises = Workout & {
   workout_exercises: WorkoutExercise[];
 };
 
+// ---------------------------------------------------------------------------
+// Plantillas de rutina (/templates)
+// ---------------------------------------------------------------------------
+
+export type RoutineTemplate = {
+  id: string;
+  user_id: string;
+  name: string;
+  created_at: string; // timestamptz ISO
+};
+
+/** Un ejercicio dentro de una plantilla. Sin series/reps/peso a propósito:
+ * la plantilla solo fija QUÉ se hace y en qué orden. */
+export type RoutineTemplateExercise = {
+  id: string;
+  template_id: string;
+  exercise_id: string;
+  position: number;
+  exercise: Exercise;
+};
+
+export type RoutineTemplateWithExercises = RoutineTemplate & {
+  /** Ordenados por `position` asc desde el DAL. */
+  routine_template_exercises: RoutineTemplateExercise[];
+};
+
 export type ExerciseProgressPoint = {
   date: string;
   maxWeightKg: number;
