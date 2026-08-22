@@ -1,9 +1,10 @@
 import type { CSSProperties } from "react";
 import { notFound } from "next/navigation";
-import { getExercises, getWorkout } from "@/lib/dal";
+import { getExercises, getRoutineTemplates, getWorkout } from "@/lib/dal";
 import { deleteWorkout } from "@/app/(app)/workouts/actions";
 import { ExercisePicker } from "@/components/exercise-picker";
 import { WorkoutExerciseCard } from "@/components/workout-exercise-card";
+import { WorkoutTemplates } from "@/components/workout-templates";
 import { PlateBadge } from "@/components/plate-badge";
 import { SessionTimer } from "@/components/session-timer";
 import { Button } from "@/components/ui/button";
@@ -26,9 +27,10 @@ function totalVolumeKg(workout: WorkoutWithExercises) {
 export default async function WorkoutPage(props: PageProps<"/workouts/[id]">) {
   const { id } = await props.params;
 
-  const [workout, exercises, { locale, t }] = await Promise.all([
+  const [workout, exercises, templates, { locale, t }] = await Promise.all([
     getWorkout(id),
     getExercises(),
+    getRoutineTemplates(),
     getDictionary(),
   ]);
 
@@ -77,7 +79,13 @@ export default async function WorkoutPage(props: PageProps<"/workouts/[id]">) {
         </div>
       )}
 
-      <ExercisePicker workoutId={workout.id} exercises={exercises} />
+      <WorkoutTemplates
+        workoutId={workout.id}
+        templates={templates}
+        canSave={sortedExercises.length > 0}
+      />
+
+      <ExercisePicker exercises={exercises} target={{ kind: "workout", workoutId: workout.id }} />
     </div>
   );
 }
