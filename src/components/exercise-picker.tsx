@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { Equipment, Exercise, MuscleGroup } from "@/lib/types";
 import { addExerciseToWorkout, createCustomExercise } from "@/app/(app)/workouts/actions";
+import { addExerciseToTemplate, createCustomExerciseForTemplate } from "@/app/(app)/templates/actions";
 import { useI18n } from "@/i18n/client";
 import {
   EQUIPMENT_OPTIONS,
@@ -17,18 +18,42 @@ import { Input, Select } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SegmentedButton, SegmentedGroup } from "@/components/ui/segmented";
 
+/** A qué se está agregando el ejercicio elegido: un entrenamiento del día o
+ * una plantilla. Cada uno dispara una acción distinta y un campo oculto
+ * distinto — de ahí la unión en vez de props sueltas. */
+type PickerTarget =
+  | { kind: "workout"; workoutId: string }
+  | { kind: "template"; templateId: string };
+
 type ExercisePickerProps = {
-  workoutId: string;
   exercises: Exercise[];
+  target: PickerTarget;
 };
+
+function targetConfig(target: PickerTarget) {
+  return target.kind === "workout"
+    ? {
+        addAction: addExerciseToWorkout,
+        createAction: createCustomExercise,
+        field: "workoutId",
+        value: target.workoutId,
+      }
+    : {
+        addAction: addExerciseToTemplate,
+        createAction: createCustomExerciseForTemplate,
+        field: "templateId",
+        value: target.templateId,
+      };
+}
 
 /**
  * Selector de ejercicio del catálogo (global + propios): busca por nombre en
  * ambos idiomas y filtra por grupo muscular/equipo. Client component — con
  * ~250 ejercicios un <select> nativo con dos <optgroup> deja de ser usable.
  */
-export function ExercisePicker({ workoutId, exercises }: ExercisePickerProps) {
+export function ExercisePicker({ exercises, target }: ExercisePickerProps) {
   const { locale, t } = useI18n();
+  const { addAction, createAction, field, value } = targetConfig(target);
   const [query, setQuery] = useState("");
   const [muscleGroup, setMuscleGroup] = useState<MuscleGroup | null>(null);
   const [equipment, setEquipment] = useState<Equipment | null>(null);
@@ -54,8 +79,8 @@ export function ExercisePicker({ workoutId, exercises }: ExercisePickerProps) {
     <Card className="flex flex-col gap-3 rounded-lg">
       <h3 className="text-label text-chalk-dim">{t("exercisePicker.heading")}</h3>
 
-      <form action={addExerciseToWorkout} className="flex flex-col gap-3">
-        <input type="hidden" name="workoutId" value={workoutId} />
+      <form action={addAction} className="flex flex-col gap-3">
+        <input type="hidden" name={field} value={value} />
 
         <Input
           type="search"
@@ -141,8 +166,8 @@ export function ExercisePicker({ workoutId, exercises }: ExercisePickerProps) {
         <summary className="cursor-pointer text-chalk-dim hover:text-chalk">
           {t("exercisePicker.notInList")}
         </summary>
-        <form action={createCustomExercise} className="mt-3 flex flex-col gap-2">
-          <input type="hidden" name="workoutId" value={workoutId} />
+        <form action={createAction} className="mt-3 flex flex-col gap-2">
+          <input type="hidden" name={field} value={value} />
           <Input type="text" name="name" placeholder={t("exercisePicker.namePlaceholder")} required maxLength={80} />
           <div className="flex gap-2">
             <Select name="kind" defaultValue="strength" className="min-w-0 flex-1">
