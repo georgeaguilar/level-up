@@ -4,8 +4,8 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { verifySession } from "@/lib/dal";
+import { assertOwnsWorkout, assertOwnsWorkoutExercise } from "@/lib/authz";
 import { createClient } from "@/lib/supabase/server";
-import { getDictionary } from "@/i18n/server";
 import { EQUIPMENT_OPTIONS, MUSCLE_GROUPS } from "@/lib/exercise-display";
 
 function todayIsoDate() {
@@ -47,22 +47,6 @@ export async function goToTodayWorkout() {
 
   revalidatePath("/");
   redirect(`/workouts/${created.id}`);
-}
-
-async function assertOwnsWorkout(workoutId: string, userId: string) {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("workouts")
-    .select("id")
-    .eq("id", workoutId)
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (error) throw error;
-  if (!data) {
-    const { t } = await getDictionary();
-    throw new Error(t("errors.unauthorized"));
-  }
 }
 
 const addExerciseSchema = z.object({
@@ -148,23 +132,6 @@ export async function createCustomExercise(formData: FormData) {
 
   if (error) throw error;
   revalidatePath(`/workouts/${workoutId}`);
-}
-
-async function assertOwnsWorkoutExercise(workoutExerciseId: string, userId: string) {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("workout_exercises")
-    .select("id, workout_id, workouts!inner(user_id)")
-    .eq("id", workoutExerciseId)
-    .eq("workouts.user_id", userId)
-    .maybeSingle();
-
-  if (error) throw error;
-  if (!data) {
-    const { t } = await getDictionary();
-    throw new Error(t("errors.unauthorized"));
-  }
-  return data.workout_id as string;
 }
 
 const removeWorkoutExerciseSchema = z.object({
