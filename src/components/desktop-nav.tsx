@@ -9,6 +9,7 @@ const LINKS: { href: string; labelKey: TranslationKey }[] = [
   { href: "/", labelKey: "nav.today" },
   { href: "/history", labelKey: "nav.history" },
   { href: "/progress", labelKey: "nav.progress" },
+  { href: "/templates", labelKey: "nav.templates" },
   { href: "/profile", labelKey: "nav.profile" },
 ];
 
