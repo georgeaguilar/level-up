@@ -3,6 +3,7 @@ import { removeWorkoutExercise } from "@/app/(app)/workouts/actions";
 import { SetRows } from "@/components/set-rows";
 import { CardioDuration } from "@/components/cardio-duration";
 import { EquipmentIcon } from "@/components/equipment-icon";
+import { MuscleSilhouette } from "@/components/muscle-silhouette";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getDictionary } from "@/i18n/server";
@@ -41,12 +42,15 @@ export async function WorkoutExerciseCard({
             </span>
           </div>
         </div>
-        <form action={removeWorkoutExercise} className="shrink-0">
-          <input type="hidden" name="workoutExerciseId" value={workoutExercise.id} />
-          <Button type="submit" variant="danger">
-            {t("workoutExerciseCard.remove")}
-          </Button>
-        </form>
+        <div className="flex shrink-0 items-start gap-2.5">
+          <MuscleSilhouette muscleGroup={exercise.muscle_group} className="mt-0.5 shrink-0" />
+          <form action={removeWorkoutExercise} className="shrink-0">
+            <input type="hidden" name="workoutExerciseId" value={workoutExercise.id} />
+            <Button type="submit" variant="danger">
+              {t("workoutExerciseCard.remove")}
+            </Button>
+          </form>
+        </div>
       </div>
 
       {isStrength ? (
