@@ -80,15 +80,23 @@ jobs:
           # Required so track_progress-forced tag mode still keeps the progress comment on plain issue events.
           track_progress: true
 
-          # Branch reuse and commit conventions, appended to the action's default instructions.
+          # Branch, commit and PR conventions, appended to the action's default instructions.
+          # The PR title rule must stay in sync with the Conventional Commits type
+          # list enforced by .github/workflows/pr-conventions.yml, which blocks
+          # merge on main if a PR's branch or title don't comply.
           prompt: |
             Branch handling for this task (overrides the default branch instructions above):
             ${{ steps.target.outputs.instructions }}
 
-            Commit message rules (always follow these; they override any default commit message format):
-            - Use Conventional Commits: `<type>: <short imperative summary>` (feat, fix, refactor, chore, docs, style, test).
+            Commit message and PR title rules (always follow these; they override any
+            default commit message format):
+            - Use Conventional Commits for both commits and the PR title: `<type>: <short imperative summary>`
+              (feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert).
             - One-line summary only, no body unless strictly necessary.
             - Never add a "Co-authored-by" trailer or any other attribution line.
+            - If you open a pull request, its source branch must be `issue/{number}` (per the branch
+              handling above) and its title must follow the same Conventional Commits format as commits —
+              a required status check blocks merge on branches or titles that don't comply.
 
           # Extra Bash tools needed to check out an existing branch (base tag-mode tools only cover add/commit/rm/push).
           claude_args: '--allowedTools "Bash(git fetch:*),Bash(git checkout:*),Bash(git switch:*),Bash(git branch:*),Bash(git status:*),Bash(git log:*),Bash(git diff:*)"'

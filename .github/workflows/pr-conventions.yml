@@ -1,0 +1,90 @@
+name: PR Conventions
+
+# Enforces branch naming (issue/{number}) and PR title format (Conventional
+# Commits) so every PR carries a traceable issue link and a changelog-ready
+# title. Required as a status check on main — see branch protection settings.
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write # needed to post/update the feedback comment
+    steps:
+      - name: Validate branch name and PR title
+        id: check
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          errors=()
+
+          # Branch must be issue/{number}, e.g. issue/1
+          if [[ ! "$HEAD_REF" =~ ^issue/[0-9]+$ ]]; then
+            errors+=("- ❌ **Rama inválida**: \`$HEAD_REF\` no cumple el patrón \`issue/{número}\` (ej. \`issue/1\`). Renombra la rama o abre el PR desde una nueva: \`git branch -m issue/N && git push -u origin issue/N\`.")
+            echo "::error::La rama '$HEAD_REF' no cumple el patrón issue/{numero} (ej. issue/1)"
+          fi
+
+          # Title must follow Conventional Commits.
+          # Keep this type list in sync with .github/workflows/claude.yml.
+          CC_REGEX='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9._/-]+\))?!?: .+'
+          if [[ ! "$PR_TITLE" =~ $CC_REGEX ]]; then
+            errors+=("- ❌ **Título inválido**: \`$PR_TITLE\` no sigue Conventional Commits. Formato: \`<tipo>: <resumen>\` (ej. \`feat: add vertical sidebar\`). Tipos válidos: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert. Edita el título del PR; el check se vuelve a ejecutar solo.")
+            echo "::error::El título del PR '$PR_TITLE' no sigue Conventional Commits"
+          fi
+
+          if [ ${#errors[@]} -eq 0 ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+            {
+              echo "body<<EOF"
+              echo "✅ La rama y el título del PR cumplen las convenciones."
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+            {
+              echo "## ✅ PR Conventions"
+              echo "Rama \`$HEAD_REF\` y título cumplen las convenciones."
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            {
+              echo "body<<EOF"
+              echo "### ⚠️ Este PR no cumple las convenciones del repositorio"
+              printf '%s\n' "${errors[@]}"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+            {
+              echo "## ⚠️ PR Conventions"
+              printf '%s\n' "${errors[@]}"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Post or update feedback comment
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BODY: ${{ steps.check.outputs.body }}
+          MARKER: '<!-- pr-conventions -->'
+        run: |
+          full_body="${MARKER}
+          ${BODY}"
+
+          existing_id=$(gh api "repos/$REPO/issues/$PR_NUMBER/comments" --paginate \
+            --jq "[.[] | select(.body | startswith(\"$MARKER\"))][0].id" 2>/dev/null || true)
+
+          if [ -n "$existing_id" ] && [ "$existing_id" != "null" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$existing_id" -f body="$full_body" || true
+          else
+            gh api -X POST "repos/$REPO/issues/$PR_NUMBER/comments" -f body="$full_body" || true
+          fi
+        continue-on-error: true
+
+      - name: Enforce result
+        if: steps.check.outputs.ok != 'true'
+        run: |
+          echo "Branch/title conventions not met. See job summary and PR comment for details."
+          exit 1
