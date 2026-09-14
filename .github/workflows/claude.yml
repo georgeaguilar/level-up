@@ -30,6 +30,37 @@ jobs:
         with:
           fetch-depth: 1
 
+      # Decides the branch strategy for issue triggers: reuse issue/{N} if it
+      # already exists on origin, otherwise let the action create it fresh.
+      # PR-triggered runs (comment/review on a PR) are left alone — the action's
+      # default "push to the existing PR branch" behavior already does the right thing.
+      - name: Determine target branch
+        id: target
+        env:
+          IS_PR: ${{ (github.event.issue.pull_request != null) || (github.event.pull_request != null) }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          if [[ "$IS_PR" == "true" || -z "$ISSUE_NUMBER" ]]; then
+            {
+              echo 'instructions<<EOF'
+              echo '- You are on a pull request branch. Push directly to it as usual, do not create a new branch.'
+              echo 'EOF'
+            } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          BRANCH="issue/${ISSUE_NUMBER}"
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+            MSG="- Branch \`$BRANCH\` already exists on origin. Before editing anything, run: \`git fetch origin $BRANCH\` then \`git checkout $BRANCH\`. Do not create a new branch. Commit and push only to \`$BRANCH\`."
+          else
+            MSG="- You are already on branch \`$BRANCH\` (created for this issue). Stay on it; do not create another branch."
+          fi
+          {
+            echo 'instructions<<EOF'
+            echo "$MSG"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
       - name: Run Claude Code
         id: claude
         uses: anthropics/claude-code-action@v1
@@ -40,11 +71,25 @@ jobs:
           additional_permissions: |
             actions: read
 
-          # Optional: Give a custom prompt to Claude. If this is not specified, Claude will perform the instructions specified in the comment that tagged it.
-          # prompt: 'Update the pull request description to include a summary of changes.'
+          # New issue-triggered runs create issue/{number} instead of claude/issue-{number}-{timestamp}.
+          # Note: if issue/{number} already exists, the action itself falls back to a
+          # claude/issue-{number}-{timestamp} branch it never pushes — the actual push target
+          # (issue/{number}, reused) comes from the `prompt` instructions below, not from this input.
+          branch_prefix: 'issue/'
+          branch_name_template: '{{prefix}}{{entityNumber}}'
+          # Required so track_progress-forced tag mode still keeps the progress comment on plain issue events.
+          track_progress: true
 
-          # Optional: Add claude_args to customize behavior and configuration
-          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
-          # or https://code.claude.com/docs/en/cli-reference for available options
-          # claude_args: '--allowed-tools Bash(gh pr *)'
+          # Branch reuse and commit conventions, appended to the action's default instructions.
+          prompt: |
+            Branch handling for this task (overrides the default branch instructions above):
+            ${{ steps.target.outputs.instructions }}
+
+            Commit message rules (always follow these; they override any default commit message format):
+            - Use Conventional Commits: `<type>: <short imperative summary>` (feat, fix, refactor, chore, docs, style, test).
+            - One-line summary only, no body unless strictly necessary.
+            - Never add a "Co-authored-by" trailer or any other attribution line.
+
+          # Extra Bash tools needed to check out an existing branch (base tag-mode tools only cover add/commit/rm/push).
+          claude_args: '--allowedTools "Bash(git fetch:*),Bash(git checkout:*),Bash(git switch:*),Bash(git branch:*),Bash(git status:*),Bash(git log:*),Bash(git diff:*)"'
 
