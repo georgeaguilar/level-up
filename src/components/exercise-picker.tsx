@@ -13,6 +13,7 @@ import {
   sortExercises,
 } from "@/lib/exercise-display";
 import { EquipmentIcon } from "@/components/equipment-icon";
+import { MuscleSilhouette } from "@/components/muscle-silhouette";
 import { Card } from "@/components/ui/card";
 import { Input, Select } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -156,6 +157,7 @@ export function ExercisePicker({ exercises, target }: ExercisePickerProps) {
                       .join(" · ")}
                   </span>
                 </span>
+                <MuscleSilhouette muscleGroup={exercise.muscle_group} className="shrink-0" />
               </button>
             ))
           )}

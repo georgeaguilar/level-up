@@ -8,6 +8,7 @@ import {
 } from "@/app/(app)/templates/actions";
 import { ExercisePicker } from "@/components/exercise-picker";
 import { EquipmentIcon } from "@/components/equipment-icon";
+import { MuscleSilhouette } from "@/components/muscle-silhouette";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getDictionary } from "@/i18n/server";
@@ -83,6 +84,7 @@ export default async function TemplatePage(props: PageProps<"/templates/[id]">) 
               <span className="min-w-0 flex-1 truncate text-chalk">
                 {exerciseName(item.exercise, locale)}
               </span>
+              <MuscleSilhouette muscleGroup={item.exercise.muscle_group} className="shrink-0" />
               <form action={moveTemplateExercise} className="flex shrink-0">
                 <input type="hidden" name="templateExerciseId" value={item.id} />
                 <Button
